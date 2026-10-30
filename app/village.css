@@ -1,0 +1,191 @@
+/* 섬 마을과 집 안. 그림의 밑동을 맞추고 화면 단추는 장면 바깥 띠에 둔다. */
+.village-scene, .house-scene {
+  --top: clamp(56px, 8dvh, 76px); --bottom: clamp(84px, 12dvh, 116px);
+  --round: clamp(56px, 7vmin, 72px);
+  position: fixed; inset: 0; display: block; padding: 0; overflow: hidden; isolation: isolate;
+  background: var(--sea);
+}
+.village-scene button:focus-visible, .house-scene button:focus-visible, .cards-screen button:focus-visible {
+  outline: 3px solid var(--ink); outline-offset: 3px;
+}
+.stage { position: absolute; container-type: inline-size; }
+.village-scroll { position:absolute; inset:0; overflow:auto; scrollbar-width:none; overscroll-behavior:contain; cursor:grab; }
+.village-scroll::-webkit-scrollbar { display:none; }
+.village-scroll > .stage { position:relative; isolation:isolate; overflow:clip; }
+.village-scroll > .stage[data-art-ready="false"] { visibility:hidden; }
+.village-loading { position:absolute; inset:0; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px; text-align:center; color:var(--ink); background:var(--cream) radial-gradient(ellipse at center,var(--cream),var(--paper)); font-size:20px; }
+.village-loading .icon { width:72px; height:72px; }
+.village-loading[hidden] { display:none; }
+.village-scroll.dragging { cursor:grabbing; user-select:none; }
+.village-scroll:focus-visible { outline:3px solid var(--ink); outline-offset:-4px; }
+.village-top { pointer-events:none; }
+.village-top button, .village-top .money { pointer-events:auto; }
+.pan-hint { position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); width:max-content; max-width:calc(100vw - 24px); padding:7px 13px; background:var(--cream); font-size:16px; text-align:center; pointer-events:none; }
+.village-art { width: 100%; height: 100%; pointer-events: none; user-select: none; }
+.fog-haze { position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; user-select:none; z-index:0; }
+.shop-card-icon { width:32px; height:32px; object-fit:contain; vertical-align:middle; margin-right:8px; }
+.build-shop { display:inline-flex; align-items:center; gap:8px; }
+.thing {
+  position: absolute; transform: translate(-50%, -100%); width: max(32px, var(--bw)); height: max(32px, var(--bh));
+  margin: 0; padding: 0; border: 0; border-radius: 14px; background: none;
+}
+.thing > .thing-art {
+  position: absolute; left: calc(50% - var(--size) * var(--cx)); bottom: calc(-1 * var(--size) * var(--foot));
+  width: var(--size); height: var(--size); max-width: none; aspect-ratio: 1;
+  pointer-events: none; user-select: none; object-fit: contain;
+}
+.thing.resident { font-size: inherit; }
+.village-scene .thing { pointer-events:none; }
+.house-scene .thing.resident { z-index: 20000 !important; }
+.village-scene .thing:disabled { opacity: 1; }
+.thing.resident > .thing-art { animation: village-bob 2.6s ease-in-out var(--delay) infinite; }
+@keyframes village-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+/* 사진·확인용(&still): 들썩임도 멈춘다(찍는 순간마다 2px씩 달라 확인 대본의 누르기 넓이·겹침 값이 흔들렸다). */
+.village-scene[data-still] .thing.resident > .thing-art { animation: none; }
+/* 살아 있는 마을: 동작 그림이 없는 주민은 하는 일에 맞춰 코드로 움직인다(app/village-life.js가 data-motion을 단다). 밑동을 축으로. */
+.thing.resident[data-motion] > .thing-art { transform-origin: calc(var(--cx) * 100%) calc((1 - var(--foot)) * 100%); }
+.thing.resident[data-motion="hop"] > .thing-art { animation: village-hop .9s ease-in-out var(--delay) infinite; }
+.thing.resident[data-motion="rock"] > .thing-art { animation: village-rock 2.6s ease-in-out var(--delay) infinite; }
+.thing.resident[data-motion="breathe"] > .thing-art { animation: village-breathe 3s ease-in-out var(--delay) infinite; }
+.thing.resident[data-motion="spin"] > .thing-art { animation: village-spin 2.4s steps(1, end) var(--delay) infinite; }
+.thing.resident[data-motion="breathe"]::before {
+  content: 'z z'; position: absolute; left: 70%; bottom: 100%; font-size: max(14px, 2.2cqw); line-height: 1; color: var(--sub);
+  white-space: nowrap; pointer-events: none; opacity: 0; animation: village-zz 3s ease-in-out var(--delay) infinite;
+}
+@keyframes village-hop { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-12%); } }
+@keyframes village-rock { 0%, 100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+@keyframes village-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.02, 1.05); } }
+@keyframes village-spin { 0% { transform: scaleX(1); } 50% { transform: scaleX(-1); } }
+@keyframes village-zz { 0% { opacity: 0; transform: translate(0, 6px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -18px); } }
+/* 놀러 가기: 걷는 그림이 있으면 그림을 번갈아 끼우고(움직임 없음), 걷는 그림은 왼쪽을 보므로 오른쪽으로 갈 때 뒤집는다. 도착하면 하트 하나. */
+.thing.resident[data-motion="walk"] > .thing-art { animation: none; }
+.thing.resident[data-flip] > .thing-art { scale: -1 1; }
+.life-heart { position: absolute; z-index: 10500; width: max(30px, 4cqw); aspect-ratio: 1; pointer-events: none; transform: translate(-50%, -100%); animation: life-heart 1.6s ease-out both; }
+.life-heart svg { display: block; width: 100%; height: 100%; }
+.life-heart .heart-back { fill: var(--cream); stroke: var(--line); stroke-width: 2.5; }
+.life-heart .heart-red { fill: var(--bad); }
+@keyframes life-heart {
+  0% { opacity: 0; transform: translate(-50%, -70%) scale(.6); } 18% { opacity: 1; transform: translate(-50%, -100%) scale(1.1); }
+  30% { transform: translate(-50%, -100%) scale(1); } 80% { opacity: 1; transform: translate(-50%, -115%); } 100% { opacity: 0; transform: translate(-50%, -130%); }
+}
+.thing.wiggle > .thing-art { animation: village-wiggle .4s ease-in-out; transform-origin: 50% 90%; }
+@keyframes village-wiggle { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+.thing.pop > .thing-art { animation: village-pop .3s ease-out; transform-origin: 50% 90%; }
+@keyframes village-pop { 0% { transform: scale(.8); } 65% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.thing.highlight::after {
+  content: ''; position: absolute; inset: -5px; border: 3px solid var(--cream); border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--orange), 0 0 18px 6px var(--cream); pointer-events: none; animation: village-shine 1.2s ease-out;
+}
+@keyframes village-shine { 0%, 100% { opacity: .3; } 40% { opacity: 1; } }
+.fog-plot { position: absolute; pointer-events: none; z-index: 10001; }
+.village-top { position: absolute; z-index: 20; inset: 0 12px auto; height: var(--top); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.money { font-size: clamp(18px, 2.6vmin, 26px); white-space: nowrap; }
+.to-map { font-size: clamp(17px, 2.2vmin, 22px); white-space: nowrap; }
+.village-bottom { position: absolute; z-index: 20; inset: auto 12px 0; height: var(--bottom); pointer-events: none; }
+.village-actions { position: absolute; inset: 0; pointer-events: none; }
+.village-actions .round { bottom: 28px; pointer-events: auto; }
+.village-actions .cards { right: 0; display: grid; }
+
+.house-scene { background: var(--wall, var(--cream)); }
+.house-room { --room-size: max(100vw, calc(100dvh - var(--top))); width: var(--room-size); aspect-ratio: 1; left: 50%; top: calc(100dvh - var(--room-size) * var(--seat-bottom) - 16px); transform: translateX(-50%); }
+.house-art { width: 100%; height: 100%; pointer-events: none; user-select: none; }
+.house-top { position: absolute; z-index: 20; inset: 0 12px auto; height: var(--top); display: flex; align-items: center; }
+.house-name { position: absolute; left: 50%; transform: translateX(-50%); font-size: clamp(20px, 3vmin, 28px); font-weight: normal; }
+.house-note { position: absolute; z-index: 20; left: 50%; top: calc(var(--top) + 8px); transform: translateX(-50%); max-width: calc(100% - 24px); width: max-content; border: 3px solid var(--line); border-radius: 20px; background: var(--cream); padding: 8px 16px; text-align: center; font-size: clamp(16px, 2vmin, 20px); }
+@media (aspect-ratio < 1/1) {
+  .house-room {
+    --room-size: min(calc(100dvh - var(--top)), calc((100vw - 24px) / var(--seat-span)));
+    width: var(--room-size); top: auto; bottom: 0; transform: none;
+    left: clamp(calc(100vw - var(--room-size)), calc(50vw - var(--room-size) * var(--seat-center)), 0px);
+  }
+  .house-art { display: block; mask-image: linear-gradient(to bottom, transparent, black 24px); }
+}
+.cards-screen { min-height: 100dvh; background: var(--bg); }
+.cards-top { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; }
+.cards-top h1 { text-align: center; font-size: clamp(24px, 3vmin, 36px); font-weight: normal; }
+.resident-count { font-size: 20px; white-space: nowrap; }
+.resident-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: clamp(12px, 1.5vw, 24px); }
+.resident-card, .resident-detail { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.resident-card { min-width: 0; padding: 12px; border: 3px solid var(--line); border-radius: 22px; background: var(--cream); box-shadow: 0 3px 0 rgb(74 59 48 / 16%); }
+.resident-portrait { display: block; width: 100%; aspect-ratio: 1; }
+.resident-portrait img { width: 100%; height: 100%; object-fit: contain; }
+.resident-portrait[data-baby="true"] img { transform: scale(.8); }
+.resident-name { font-size: clamp(24px, 2.5vmin, 30px); font-weight: normal; line-height: 1.25; }
+.resident-date, .resident-unit { font-size: 16px; line-height: 1.4; }
+.resident-unit { color: var(--sub); }
+.resident-work { font-size: 16px; line-height: 1.4; }
+.resident-work b { font-weight: normal; color: var(--sub); }
+.resident-hint { font-size: 16px; line-height: 1.4; padding: 4px 12px; border: 2px dashed var(--line); border-radius: 14px; background: var(--paper); }
+.resident-place { margin-top: auto; font-size: 16px; padding: 2px 12px; min-height: 32px; box-shadow: none; background: var(--paper); }
+.card-sheet { padding-top: 54px; }
+.resident-detail { gap: 14px; padding-bottom: 8px; }
+.resident-detail .resident-portrait { width: min(60vw, 320px); flex: none; }
+.resident-detail .resident-name { font-size: 32px; }
+.resident-detail .resident-date, .resident-detail .resident-unit, .resident-detail .resident-place,
+.resident-detail .resident-work, .resident-detail .resident-hint { font-size: 20px; }
+@media (min-aspect-ratio: 1/1) {
+  .card-sheet { max-height: calc(100dvh - 24px); }
+  .resident-detail { gap: 12px; }
+}
+@media (max-width: 600px) {
+  .cards-top { grid-template-columns: 1fr auto; gap: 14px 8px; }
+  .cards-top .back { justify-self: start; }
+  .cards-top h1 { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .thing > .thing-art, .thing.highlight::after { animation: none !important; }
+  .thing.resident::before { display: none; }
+  .life-heart { animation: none; }
+}
+/* Fixed shops, their sign panels, and grounded shadows. */
+.village-actions .shops { right:calc(var(--round) + 22px); display:grid; }
+.village-actions .shops img { width:42px; height:42px; object-fit:contain; }
+.thing > .thing-shadow {
+  position:absolute; z-index:-1; pointer-events:none; left:50%; bottom:calc(var(--bw) * -.13);
+  width:calc(var(--bw) * .95); height:calc(var(--bw) * .95 * .26); border-radius:50%;
+  transform:translateX(-50%); background:radial-gradient(ellipse,rgb(28 40 12 / .42),rgb(28 40 12 / .16) 44%,transparent 72%);
+}
+.thing.resident > .thing-shadow { width:calc(var(--bw) * .78); height:calc(var(--bw) * .78 * .26); }
+.thing.resident[data-work-frame] > .thing-art {
+  width:calc(var(--size) * 4 / 3); height:calc(var(--size) * 4 / 3);
+  left:calc(50% - var(--size) * var(--cx) - var(--size) / 6);
+}
+.thing.resident[data-motion="work"] > .thing-art, .thing.resident[data-motion="rock"] > .thing-art { animation:none; }
+.sign-panel {
+  position:absolute; pointer-events:none; left:calc(50% - var(--size) * var(--cx) + var(--size) * var(--panel-x));
+  bottom:calc(var(--size) * (1 - var(--foot) - var(--panel-y) - var(--panel-h)));
+  width:calc(var(--size) * var(--panel-w)); height:calc(var(--size) * var(--panel-h));
+  display:flex; align-items:center; justify-content:center; gap:3px; color:var(--ink); font-size:max(10px,1.05cqw); line-height:1;
+}
+.sign-panel img { height:100%; width:auto; }
+.sign-panel > span { font-size:max(9px,.85cqw); }
+.sign-panel b { font-weight:normal; background:var(--cream); border-radius:3px; }
+.shop-sheet { text-align:center; }
+.shop-sheet h2, .shop-list-sheet h2 { font-size:28px; font-weight:normal; }
+.shop-preview { display:block; margin:auto; width:180px; height:180px; object-fit:contain; }
+.shop-sheet h3 { font-weight:normal; font-size:20px; }
+.shop-level { letter-spacing:5px; color:var(--orange); }
+.shop-workers { display:flex; justify-content:center; gap:12px; margin:12px 0; }
+.shop-worker { display:flex; flex:1; max-width:120px; flex-direction:column; align-items:center; gap:6px; font-size:17px; }
+.shop-worker img { width:64px; height:64px; object-fit:contain; }
+.worker-empty { width:56px; height:56px; border:2px dashed var(--line); border-radius:50%; background:var(--paper); }
+.build-shop { background:var(--sage); }
+.build-shop[aria-disabled="true"] { opacity:.5; }
+.build-message { min-height:1.5em; font-size:17px; color:var(--bad); }
+.shop-list { display:grid; gap:8px; }
+.shop-row { display:grid; grid-template-columns:56px 1fr; align-items:center; gap:0 12px; padding:8px 12px; text-align:left; border:2px solid var(--line); border-radius:16px; background:var(--paper); }
+.shop-row img { grid-row:1 / 3; object-fit:contain; }
+.shop-row strong { font-size:20px; font-weight:normal; }
+.shop-row > span { font-size:16px; color:var(--sub); }
+.shop-sheet .shop-locked { margin:16px 0 24px; }
+.thing.building > .thing-art { visibility:hidden; }
+.build-dust { position:absolute; z-index:10500; pointer-events:none; width:12cqw; height:6cqw; transform:translate(-50%,-75%); }
+.build-dust i { position:absolute; left:calc(var(--i) * 16%); bottom:0; width:4cqw; height:4cqw; border-radius:50%; background:#fff5df; animation:build-dust .4s ease-out both; }
+@keyframes build-dust { from { opacity:.9; transform:scale(.5); } to { opacity:0; transform:translate(calc((var(--i) - 2) * 1.5cqw),-2cqw) scale(1.8); } }
+.fog-plot.highlight { outline:3px solid var(--orange); outline-offset:-10px; border-radius:35%; animation:village-shine 1s; }
+.life-shop img { display:block; width:100%; height:100%; object-fit:contain; background:var(--cream); border:2px solid var(--line); border-radius:50%; }
+.refund-note { position:absolute; z-index:25; top:calc(var(--top) + 12px); left:50%; transform:translateX(-50%); width:max-content; max-width:calc(100% - 24px); text-align:center; font-size:18px; }
+@media (prefers-reduced-motion: reduce) {
+  .thing-art { translate:none !important; rotate:none !important; transition:none !important; }
+  .build-dust { display:none; }
+}

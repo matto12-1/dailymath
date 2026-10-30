@@ -1,0 +1,8 @@
+import {define,meta,casesSpec,errors,wrong} from './helpers.js?v=9a67f36b25';
+const cases=[];for(const [large,small,k]of [['m²','cm²',100],['km²','m²',1000]])for(let a=1;a<=30;a++)for(const reverse of [false,true])cases.push({a,k,reverse,large,small});
+const answer=v=>v.reverse?v.a:v.a*v.k*v.k;
+export default define(meta('area','unit',2,'calc',['03-12'],'넓이 단위 환산'),{
+ input:'number',answerUnit:v=>v.toUnit,minMistakes:2,back:'g3s1-length-time',texts:['〔{shown} {fromUnit} = ? {toUnit}〕빈칸에 알맞은 수는 얼마일까요?'],
+ ...casesSpec(cases,answer,v=>v.reverse?v.a:v.a*10**(2*Math.log10(v.k)),v=>({...v,operation:v.reverse?'÷':'×',largeLength:v.large==='m²'?'m':'km',smallLength:v.small==='cm²'?'cm':'m',action:v.reverse?'나누었습니다':'곱했습니다',correctAction:v.reverse?'나눕니다':'곱합니다',shown:v.reverse?v.a*v.k*v.k:v.a,fromUnit:v.reverse?v.small:v.large,toUnit:v.reverse?v.large:v.small,factor:v.k*v.k,shortFactor:v.k*v.k/10,otherFactor:v.k===100?1000000:10000,otherCalculation:v.reverse?(v.a*v.k*v.k)+' ÷ '+(v.k===100?1000000:10000):v.a+' × '+(v.k===100?1000000:10000),...errors(wrong(v.reverse?v.a*v.k:v.a*v.k,'길이 단위처럼 환산하기',v.reverse?'1 {largeLength} = {k} {smallLength}만 생각하여 {k:으로/로} 나누었습니다. 1 {large} = {factor} {small}이므로 {shown} ÷ {factor} = {answer} {toUnit:입니다}.':'1 {largeLength} = {k} {smallLength}만 생각하여 {k:을/를} 곱했습니다. 1 {large} = {factor} {small}이므로 {shown} × {factor} = {answer} {toUnit:입니다}.'),wrong(v.reverse?v.a*10:v.a*v.k*v.k/10,'넓이 환산 비에서 0 하나 빠뜨리기','넓이 단위의 비 {factor}에서 0 하나를 빠뜨린 {shortFactor:으로/로} {action}. 길이 비를 두 번 곱한 {factor:으로/로} 환산하면 {answer} {toUnit:입니다}.'))})),
+ solution:'1 {largeLength} = {k} {smallLength}이므로 1 {large} = {factor} {small:입니다}. 이 넓이의 비로 환산하면 {shown} {operation} {factor} = {answer} {toUnit:입니다}.\n따라서 빈칸에 알맞은 수는 {answer:입니다}.',
+});

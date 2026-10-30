@@ -1,0 +1,424 @@
+/* 선생님 화면(teacher.html)·관리 화면(admin.html)이 같이 쓰는 생김새(Ruling R34). app.css 다음, 각 쪽 CSS(teacher.css·admin.css)
+   앞에 읽는다: 색 값(밝은 판·어두운 판), 글꼴, 쪽 공통 요소 규칙, 두 쪽이 같이 쓰는 틀(맨 위 줄 · 왼쪽 아이콘 줄 · 알약 · 이름표),
+   알림 줄(teacher/say.js의 .t-msg), 구글 로그인 칸(google-login.js의 .g-*), 시트 바탕(sheet.js), 밝기 단추(staff-theme.js의 .s-theme),
+   MattoLAB 푸터 색, 폰 단추 44px 바닥. 그 쪽에만 있는 규칙은 각 쪽 CSS에 둔다.
+   배치는 code.xr 「Dashboard V14」(2026-10-22 오후 결정), 색은 「살구·먹색」(같은 날 저녁 결정, 값의 원본은 tools/teacher-palettes.mjs의 A,
+   tests/staff-theme.test.mjs가 이 파일 값과 같은지 본다): 따뜻한 미색 바탕에 미색 둥근 칸(테두리·그림자 아주 옅게), 글은 먹색·회색,
+   강조 칸(반 정답률)은 옅은 살구 면에 짙은 같은 계열 글자, 누르는 큰 단추·반 코드 카드는 먹색 알약. 막대는 옅은 따뜻한 회색이고
+   가장 낮은 갈래 하나만 살구·코랄. 어두운 판은 부드러운 먹색 바탕에 조금 밝은 칸, 알약은 밝은 미색. 큰 면에 순검정·거의 검정은 없다.
+   글꼴은 Pretendard(못 받으면 시스템 고딕). 판은 html[data-theme](app/theme.js가 그리기 전에 단다)로 갈아 낀다.
+   색은 모두 아래 이름 붙은 값(--c-*)만 쓴다(--c-orange 묶음은 이제 살구색): 글자 대비는 두 판 모두 본문 4.5:1 이상(옅은 글씨,
+   강조 칸 글자, 반 코드 카드 글자도. tests/staff-theme.test.mjs가 잰다). 검정 위 흰색 같은 최대 대비는 피한다.
+   app.css의 아이 앱 값(--bg·--paper·--ink…)도 이 두 쪽에서는 같은 판 값으로 덮어 남은 규칙이 크림색을 칠하지 않게 한다. */
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --c-bg: #f4f1ec;
+  --c-surface: #fffdf9;
+  --c-surface-2: #f8f4ee;
+  --c-hover: #f0ebe3;
+  --c-border: #ece6dc;
+  --c-border-2: #dad2c5;
+  --c-text: #2a2c30;
+  --c-text-2: #64615b;
+  --c-accent: #3d4046;
+  --c-accent-ink: #3d4046;
+  --c-accent-soft: #efe9e0;
+  --c-on-accent: #f6f3ee;
+  --c-orange: #e2906f;
+  --c-orange-2: #d47e5e;
+  --c-orange-ink: #a5502f;
+  --c-rate-bg: #fbe7dc;
+  --c-rate-line: #f2d2c1;
+  --c-rate-chip: #f6d6c6;
+  --c-rate-ink: #7a3a23;
+  --c-rate-ink-2: #8a4a31;
+  --c-card-bg: #3d4046;
+  --c-card-line: transparent;
+  --c-card-ink: #f3f0ea;
+  --c-card-sub: #c4bfb6;
+  --c-card-shadow: 0 12px 28px rgba(61, 64, 70, .14);
+  --c-state-bg: #f3f0ea;
+  --c-state-ink: #3d4046;
+  --c-good-ink: #3b7150;
+  --c-good-soft: #e4efe6;
+  --c-good-line: #c5dacb;
+  --c-bad-ink: #a3433a;
+  --c-bad-soft: #f8e6e2;
+  --c-bad-line: #ebcbc4;
+  --c-level-good: #188d7c;
+  --c-level-warn: #e3b667;
+  --c-level-bad: #c66846;
+  --c-warn-soft: #fbecd9;
+  --c-warn-ink: #684507;
+  --c-bar: #d3cdc4;
+  --c-bar-track: #efe9e1;
+  --c-skeleton: #efe9e1;
+  --c-scrim: rgba(42, 44, 48, .34);
+  --c-shadow: 0 1px 2px rgba(42, 44, 48, .025);
+  --c-pop: 0 14px 36px rgba(42, 44, 48, .10);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --c-bg: #1c1d20;
+  --c-surface: #24262a;
+  --c-surface-2: #2a2c31;
+  --c-hover: #31343a;
+  --c-border: #2f3237;
+  --c-border-2: #43474e;
+  --c-text: #e6e4e0;
+  --c-text-2: #aaa59e;
+  --c-accent: #cfcac2;
+  --c-accent-ink: #cfcac2;
+  --c-accent-soft: #31343a;
+  --c-on-accent: #26282c;
+  --c-orange: #d98c70;
+  --c-orange-2: #c97c61;
+  --c-orange-ink: #ebb4a0;
+  --c-rate-bg: #3e2b24;
+  --c-rate-line: #4e362d;
+  --c-rate-chip: #4e362d;
+  --c-rate-ink: #f4d6c9;
+  --c-rate-ink-2: #dfbaab;
+  --c-card-bg: #30333a;
+  --c-card-line: #3e4249;
+  --c-card-ink: #e6e4e0;
+  --c-card-sub: #aca79f;
+  --c-card-shadow: none;
+  --c-state-bg: #e6e4e0;
+  --c-state-ink: #30333a;
+  --c-good-ink: #9fcfae;
+  --c-good-soft: #1f2f27;
+  --c-good-line: #2e463a;
+  --c-bad-ink: #e6a69c;
+  --c-bad-soft: #372422;
+  --c-bad-line: #563632;
+  --c-level-good: #34a08e;
+  --c-level-warn: #cfa354;
+  --c-level-bad: #c66846;
+  --c-warn-soft: #3c2d18;
+  --c-warn-ink: #edd3b0;
+  --c-bar: #5f636a;
+  --c-bar-track: #2f3237;
+  --c-skeleton: #2f3237;
+  --c-scrim: rgba(0, 0, 0, .5);
+  --c-shadow: none;
+  --c-pop: 0 18px 44px rgba(0, 0, 0, .38);
+}
+html[data-theme] {
+  /* 가로 막대(실수·접속 줄 막대 · 반 목록 들어온 아이 막대 · 반 설정 들어온 아이): 갈래 막대(--c-bar)보다 한 단 짙은 따뜻한 회색.
+     옅은 막대 바탕(--c-bar-track) 위에서도 길이가 보이게 옅은 글씨 색과 바탕을 섞는다 */
+  --c-line: color-mix(in srgb, var(--c-text-2) 55%, var(--c-bar-track));
+  --bg: var(--c-bg); --paper: var(--c-surface); --cream: var(--c-surface-2); --ink: var(--c-text); --sub: var(--c-text-2); --line: var(--c-border-2);
+  --sage: var(--c-good-soft); --sage-d: var(--c-good-ink); --orange: var(--c-accent); --orange-d: var(--c-accent); --bad: var(--c-bad-ink); --ok: var(--c-good-ink);
+  background: var(--c-bg);
+}
+
+.teacher-page, .admin-page {
+  --s-pad: clamp(16px, 2vw, 32px); /* 쪽 둘레 여백 */
+  --s-gap: clamp(12px, 1.1vw, 20px); /* 칸 사이 */
+  --s-radius: 20px; /* 칸 모서리 */
+  --s-rail: 72px; /* 왼쪽 아이콘 줄 폭 */
+  --s-font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  font-family: var(--s-font);
+  font-size: clamp(14.5px, 0.2vw + 12px, 16px);
+  line-height: 1.5;
+  letter-spacing: -.01em;
+  color: var(--c-text);
+  background: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── 공통 ──
+   쪽 전체 요소 규칙은 :where()로 점수를 요소 하나만큼(0,0,1)으로 낮춘다: app.css의 button·input(같은 점수, 뒤에 읽는
+   이 파일이 이긴다)만 덮고, 칸 하나짜리 class 규칙(.t-sort·.t-seat-btn·.a-logout·.sheet-close…)에는 진다. */
+:where(.teacher-page, .admin-page) :is(h1, h2, h3) { font-weight: 650; letter-spacing: -.025em; line-height: 1.25; }
+:where(.teacher-page, .admin-page) button {
+  font: inherit; font-size: .9375em; font-weight: 600; line-height: 1.3; color: var(--c-text);
+  background: var(--c-surface); border: 1px solid var(--c-border-2); border-radius: 999px; min-height: 40px; padding: .45em 1.1em;
+  transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+}
+/* 고른 · 눌린 · 지금 쪽 단추는 hover 바탕을 덮지 않는다(그 단추의 고른 색 그대로, 총검수 B-4). :where라 세기는 그대로 */
+:where(.teacher-page, .admin-page) button:not(:disabled):where(:not([aria-selected="true"], [aria-pressed="true"], [aria-current="page"])):hover { background: var(--c-hover); }
+:where(.teacher-page, .admin-page) button.primary { background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); }
+:where(.teacher-page, .admin-page) button.primary:not(:disabled):hover { background: color-mix(in srgb, var(--c-accent) 84%, var(--c-bg)); border-color: transparent; }
+:where(.teacher-page, .admin-page) button:disabled { opacity: .5; }
+:where(.teacher-page, .admin-page) :is(input, select, textarea) {
+  font: inherit; color: var(--c-text); border: 1px solid var(--c-border-2); background: var(--c-surface); border-radius: 12px; padding: .5em .8em;
+}
+:where(.teacher-page, .admin-page) :is(input, textarea)::placeholder { color: var(--c-text-2); opacity: 1; }
+:where(.teacher-page, .admin-page) :is(input, select, textarea):hover { border-color: color-mix(in srgb, var(--c-border-2) 55%, var(--c-text-2)); }
+.teacher-page :is(a, button, input, select):focus-visible,
+.admin-page :is(a, button, input, select, textarea, [tabindex="0"]):focus-visible { outline: 2px solid var(--c-accent-ink); outline-offset: 2px; }
+:is(.teacher-page, .admin-page) [tabindex="-1"]:focus { outline: none; }
+:where(.teacher-page, .admin-page) a { color: var(--c-accent-ink); }
+:where(.teacher-page, .admin-page) :is(h3, ul, ol) { margin: 0; }
+:where(.teacher-page, .admin-page) :is(strong, b) { font-weight: 700; }
+/* 화면 읽개만 읽는 글(보이지 않지만 이름·안내로 남는다) */
+.s-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ── 두 쪽이 같이 쓰는 틀(V14): 맨 위 줄(알약들) · 왼쪽 아이콘 줄 · 본문 ──
+   .s-app은 쪽 맨 위 한 화면(높이 100dvh 이상)이다. 맨 위 줄 오른쪽 끝 MattoLAB 글자(app/lab.js)는 들어오는 쪽(로그인 · 처음 바꾸기 ·
+   잊었어요 · 열쇠 · 확인 중)에만 있고 로그인한 뒤 일하는 화면(반 목록 · 반 대시보드 · 관리 첫 화면)에서는 뺀다(main.js).
+   맨 위 줄 높이는 staff-shell.js가 재어 --s-top-h로 둔다(아이별 표가 남은 높이 안에서만 내려가게). */
+.s-app {
+  display: grid; grid-template-columns: var(--s-rail) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "top top" "rail main"; min-height: 100dvh;
+}
+.s-top { grid-area: top; display: flex; align-items: center; gap: 12px; padding: 14px var(--s-pad) 6px calc(var(--s-pad) * .75); min-width: 0; }
+.s-rail { grid-area: rail; padding: 10px 0 18px calc(var(--s-pad) * .75); }
+/* 아이콘 줄은 본문 위 층(z-index 40): 붙어 있는 줄(sticky)은 제 쌓임 층을 만들어 이름표(z-index 30)가 그 안에만 오르므로, 층이 없으면
+   뒤에 오는 본문 칸(자리 잡힌 숫자 칸 · 등장 움직임 칸)이 이름표를 덮는다(2026-10-23 Matto: 「개인정보 안내」 이름표가 반 정답률 칸
+   뒤에 깔림). 반 고르기 목록(60) · 시트(100)는 그대로 위 */
+.s-rail-inner { position: sticky; top: 12px; z-index: 40; display: flex; flex-direction: column; gap: 14px; align-items: center; width: 52px; }
+.s-main { grid-area: main; min-width: 0; }
+
+/* 로그인 배경 ④(2026-10-25 Matto 고름, 설계서 4-6): 들어오는 화면(로그인 · 잊었어요 · 처음 바꾸기 · 열쇠, main.js가 body[data-screen])에만
+   교실 창가 그림. 쪽 뒤에 화면 크기 그대로 붙은 판(body::before, position: fixed)으로 깐다: 폰 브라우저는 붙은 바탕
+   (background-attachment: fixed)을 무시하거나 쪽 길이로 늘려 그린다. 카드 · 알약은 불투명 그대로라 글자 대비는 판 색 그대로.
+   어두운 판은 그림 위에 반투명 먹색 막을 덮는다. 인쇄에는 그리지 않는다(아래 @media print) */
+body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"]) { background: transparent; }
+body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"])::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: url('img/staff/login-classroom.8cd4ee67b4f2.webp') center / cover no-repeat;
+}
+html[data-theme="dark"] body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"])::before { background-image: linear-gradient(rgba(18, 19, 21, .6), rgba(18, 19, 21, .6)), url('img/staff/login-classroom.8cd4ee67b4f2.webp'); }
+
+/* 맨 위 줄 오른쪽 끝 묶음: 계정 칸(로그인했을 때) · MattoLAB 글자(app/lab.js, 들어오는 쪽에서만). 글자는 이름 칸과 같은 높이의 흰 알약 */
+.s-top-end { display: flex; align-items: center; justify-content: flex-end; gap: 10px; min-width: 0; }
+.s-top .labmk { gap: 0; min-height: 48px; padding: 0 18px; } /* 알약의 칸 사이(4px)가 Matto와 LAB을 띄우지 않게 */
+/* 알약 칸: 흰 둥근 판(맨 위 줄의 이름 · 탭 · 계정, 왼쪽 줄의 묶음) */
+.s-pill { display: flex; align-items: center; gap: 4px; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 999px; box-shadow: var(--c-shadow); min-width: 0; }
+/* 이름 그림: 옅은 살구 동그라미(강조 칸 면)에 짙은 갈색 선(강조 칸 글자). 선과 면 대비는 강조 칸 글자와 같아 4.5:1 이상
+   (tests/staff-theme.test.mjs c-rate-ink · c-rate-bg). 선은 가림 그림(--brand-ico, 관리 화면은 방패)을 색 이름으로 칠한다 */
+.s-brand {
+  --brand-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M7 8.5h4M9 6.5v4M14 8.5h4M7 15.5l3 3M10 15.5l-3 3M14 15h4M14 18h4'/%3E%3C/svg%3E");
+  position: relative; margin: 0; padding: 6px 16px 6px 6px; gap: 10px; font-size: 1rem; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; flex: none;
+}
+.s-brand::before { content: ''; flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--c-rate-bg); box-shadow: inset 0 0 0 1px var(--c-rate-line); }
+.s-brand::after {
+  content: ''; position: absolute; left: 13px; top: 50%; width: 20px; height: 20px; transform: translateY(-50%); background: var(--c-rate-ink);
+  -webkit-mask: var(--brand-ico) center / contain no-repeat; mask: var(--brand-ico) center / contain no-repeat;
+}
+.s-rail-group { flex-direction: column; padding: 4px; gap: 2px; border-radius: 26px; }
+.s-rail-group + .s-rail-gap { flex: 1; }
+
+/* 아이콘 단추(왼쪽 줄): 44px 동그라미, 그림은 CSS 마스크, 이름표는 마우스·초점일 때 오른쪽에 뜬다(data-tip, 화면 읽개는 글 이름) */
+.s-rail-btn {
+  position: relative; display: grid; place-items: center; width: 44px; height: 44px; min-height: 44px; padding: 0; border: 0; border-radius: 50%;
+  background: transparent; color: var(--c-text-2); text-decoration: none;
+}
+.s-rail-btn::before { content: ''; width: 20px; height: 20px; background: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+.s-rail-btn:hover { background: var(--c-hover); color: var(--c-text); }
+/* 두 쪽이 같이 쓰는 그림(선 그림, 24칸) */
+.s-i-classes { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='3.5' y='3.5' width='7' height='7' rx='2'/%3E%3Crect x='13.5' y='3.5' width='7' height='7' rx='2'/%3E%3Crect x='3.5' y='13.5' width='7' height='7' rx='2'/%3E%3Crect x='13.5' y='13.5' width='7' height='7' rx='2'/%3E%3C/svg%3E"); }
+.s-i-privacy { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3 5 6v5.5c0 4.2 3 7.6 7 9 4-1.4 7-4.8 7-9V6Z'/%3E%3Cpath d='M12 9.5v4M12 16.5v.01'/%3E%3C/svg%3E"); }
+.s-i-logout { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4'/%3E%3Cpath d='M10 16l-4-4 4-4M6 12h9'/%3E%3C/svg%3E"); }
+.s-rail-btn[aria-current="page"] { background: var(--c-accent); color: var(--c-on-accent); }
+/* 이름표는 보이는 글만: content의 「/ ""」로 화면 읽개 이름(단추 안 .s-sr)에 겹쳐 읽히지 않게(대체 글을 모르는 브라우저는 앞 줄을 쓴다) */
+.s-rail-btn::after, .s-theme::after {
+  content: attr(data-tip); content: attr(data-tip) / ""; position: absolute; left: calc(100% + 10px); top: 50%; z-index: 30; transform: translate(-4px, -50%);
+  padding: 5px 10px; border-radius: 8px; background: var(--c-accent); color: var(--c-on-accent); font-size: .8125rem; font-weight: 600; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity .12s ease, transform .12s ease;
+}
+.s-rail-btn:is(:hover, :focus-visible)::after, .s-theme:is(:hover, :focus-visible)::after { opacity: 1; transform: translate(0, -50%); }
+
+/* 밝기 단추(app/staff-theme.js): 해와 달이 위아래로 든 알약 하나(V14). 켜진 판 쪽 그림에 흰 동그라미. role=switch 「어두운 화면」 */
+.s-theme {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; width: 52px; min-height: 0; padding: 4px;
+  border: 1px solid var(--c-border); border-radius: 26px; background: var(--c-surface); color: var(--c-text-2); box-shadow: var(--c-shadow);
+}
+.s-theme:not(:disabled):hover { background: var(--c-surface); color: var(--c-text); }
+.s-theme-sun, .s-theme-moon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; transition: background-color .2s ease, color .2s ease; }
+.s-theme-sun::before, .s-theme-moon::before { content: ''; width: 19px; height: 19px; background: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+.s-theme-sun { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4'/%3E%3C/svg%3E"); }
+.s-theme-moon { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z'/%3E%3C/svg%3E"); }
+.s-theme[aria-checked="false"] .s-theme-sun, .s-theme[aria-checked="true"] .s-theme-moon { background: var(--c-hover); color: var(--c-text); }
+
+/* 밝기를 바꾸는 순간: 누른 단추 자리에서 새 판이 원으로 퍼진다(View Transitions, staff-theme.js가 원을 그린다).
+   옛 판·새 판을 겹쳐 두기만 하고 브라우저 기본 흐림은 끈다 */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+/* 판을 바꾸는 순간에는 색 넘김 없이 바로 새 판 색(app/staff-theme.js가 두 그림 틀 동안 단다) */
+html.s-theme-turning *, html.s-theme-turning *::before, html.s-theme-turning *::after { transition: none !important; }
+::view-transition-new(root) { z-index: 2; }
+
+/* 알림 줄(app/teacher/say.js의 .t-msg): 안 된 일만 붉은 글, 된 일은 초록, 그 밖 안내는 글 색 */
+.t-msg { color: var(--c-text); font-size: .9375em; }
+.t-msg[data-tone="bad"] { color: var(--c-bad-ink); }
+.t-msg[data-tone="ok"] { color: var(--c-good-ink); }
+/* 빈 알림 칸은 자리(칸 사이 틈)를 차지하지 않되 화면 읽개에는 남긴다: display:none이면 글이 들어와도 읽어 주지 않을 수 있다 */
+.t-msg:empty { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+/* 구글 로그인 칸(app/google-login.js의 .g-*). 구글 단추는 구글이 그린다(둘레만 맞춘다) */
+.g-wait { border: 1px dashed var(--c-border-2); border-radius: 14px; padding: .7em 1em; color: var(--c-text-2); background: var(--c-surface); }
+.g-button { min-height: 44px; }
+.g-dev { display: grid; gap: 10px; padding-top: 12px; border-top: 1px dashed var(--c-border-2); }
+.g-dev-field { display: grid; gap: 6px; }
+.g-dev-field span { color: var(--c-text-2); font-size: .875em; }
+.g-dev input { width: 100%; }
+.g-dev button { justify-self: start; }
+/* 앱 안 브라우저 안내(카카오톡 등, 구글이 앱 안 창의 로그인을 막는다): 구글 칸 위 옅은 붉은 판, [주소 복사하기], 된 일 한 줄.
+   된 일 줄이 비었으면 자리를 차지하지 않되 화면 읽개에는 남긴다(.t-msg:empty와 같은 까닭). 복사가 막히면 주소 칸(폭 전체) */
+.g-inapp { display: grid; gap: 10px; margin-bottom: 14px; padding: .8em 1em; border: 1px solid var(--c-bad-line); border-radius: 14px; background: var(--c-bad-soft); }
+.g-inapp p { margin: 0; }
+.g-inapp-text { color: var(--c-bad-ink); }
+.g-inapp .g-copy { justify-self: start; }
+.g-inapp-said { color: var(--c-good-ink); }
+.g-inapp-said:empty { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.g-copy-field { width: 100%; }
+
+/* 시트(sheet.js) 바탕: 폰은 아래에서 올라오고, 700px부터는 가운데 창. 창 폭은 각 쪽 CSS(.sheet.t-sheet·.sheet.a-sheet) */
+.sheet-backdrop { position: fixed; inset: 0; z-index: 100; display: flex; align-items: flex-end; justify-content: center; background: var(--c-scrim); }
+.sheet {
+  position: relative; display: flex; flex-direction: column; gap: 14px; width: 100%; max-height: 86dvh; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--c-surface); color: var(--c-text); border: 1px solid var(--c-border); border-bottom: 0; border-radius: 22px 22px 0 0;
+  padding: 26px 24px 24px; outline: none; box-shadow: var(--c-pop);
+  animation: s-sheet-up .2s ease-out;
+}
+@keyframes s-sheet-up { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet-close {
+  position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; min-height: 0; padding: 0; border-radius: 50%;
+  border: 0; background: transparent; color: var(--c-text-2); font-size: 1rem;
+}
+.sheet h2 { padding-right: 44px; font-size: 1.3em; }
+@media (min-width: 700px) {
+  .sheet-backdrop { align-items: center; padding: 24px; }
+  .sheet { border-bottom: 1px solid var(--c-border); border-radius: 22px; }
+}
+
+/* MattoLAB 종이 창(app/lab.js, 맨 위 줄 오른쪽 끝 글자를 누르면 뜬다)의 이 쪽 색. 종이 · 글자 생김새는 lab.css, 알맹이 구조 · 크기는
+   assets/brand/brand.css(mattolab-brand 사본, 고치지 않는다). 종이는 이 쪽 칸 색, 두 줄 테두리는 옅은 글자색, 바탕 막은 다른 시트와 같다.
+   브랜드가 박아 둔 색(워드마크 「Matto」 #1E1E1E · CONTACT 라벨 청동 · 제품 링크 누를 때 · 지금 제품 표시 · 조회수 형광펜)은
+   두 판 모두 이 쪽 색(글자색 · 살구 글자색 · 살구)으로 덮는다(2026-10-22 저녁 「살구·먹색」). 워드마크 「LAB」 코랄은 모든 사이트에서
+   같은 로고라 그대로 둔다. */
+:is(.teacher-page, .admin-page) .sheet-backdrop:has(> .lab-sheet) { background: var(--c-scrim); }
+:is(.teacher-page, .admin-page) .sheet.lab-sheet { --lab-paper: var(--c-surface); --lab-rule: var(--c-text-2); --lab-text: var(--c-text); box-shadow: var(--c-pop); }
+:is(.teacher-page, .admin-page) .lab {
+  --lab-sans: var(--s-font);
+  --lab-ink: var(--c-text); --lab-dim: var(--c-text-2); --lab-line: var(--c-border); --lab-key: var(--c-text-2); --lab-soft: var(--c-text-2); --lab-soon: var(--c-text-2);
+  --lab-focus: var(--c-accent-ink); --lab-hi: color-mix(in srgb, var(--c-orange) 35%, transparent);
+}
+:is(.teacher-page, .admin-page) .lab .labmark i { color: var(--c-text); }
+:is(.teacher-page, .admin-page) .lab .lab-label { color: var(--c-orange-ink); }
+:is(.teacher-page, .admin-page) .lab .lab-p b.on { color: var(--c-orange-ink); }
+:is(.teacher-page, .admin-page) .lab .lab-p a:hover { color: var(--c-text); text-shadow: none; }
+
+/* 개인정보 안내 링크(Ruling R39, app/lab.js privacyLink): 로그인 화면 안내 줄은 글 링크, 왼쪽 줄에서는 아이콘 단추 */
+:is(.teacher-page, .admin-page) .privacy-link {
+  display: inline-flex; align-items: center; min-height: 36px;
+  color: var(--c-text-2); font-size: .875em; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--c-border-2);
+}
+:is(.teacher-page, .admin-page) .privacy-link:hover { color: var(--c-text); }
+:is(.teacher-page, .admin-page) .privacy-note { margin: 0; color: var(--c-text-2); font-size: .875em; }
+:is(.teacher-page, .admin-page) .privacy-note .privacy-link { font-size: 1em; }
+:is(.teacher-page, .admin-page) .s-rail .privacy-link { display: grid; min-height: 44px; font-size: 1em; text-decoration: none; }
+
+/* 폰(760px 아래): 아이콘 줄은 맨 위 줄 아래 가로 한 줄(이름표는 위로 뜨지 않고 글 이름만), 누르는 단추는 모두 44px 이상 */
+@media (max-width: 759px) {
+  .s-app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); grid-template-areas: "top" "rail" "main"; }
+  .s-rail { padding: 0 var(--s-pad) 4px; }
+  .s-rail-inner { position: static; flex-direction: row; justify-content: flex-end; width: auto; gap: 8px; }
+  .s-rail-group { flex-direction: row; }
+  .s-rail-group + .s-rail-gap { display: none; }
+  .s-theme { flex-direction: row; width: auto; }
+  .s-rail-btn::after, .s-theme::after { display: none; }
+  :where(.teacher-page, .admin-page) button { min-height: 44px; }
+  :is(.teacher-page, .admin-page) .privacy-link { min-height: 44px; }
+  .sheet-close { width: 44px; height: 44px; min-height: 44px; top: 8px; right: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet { animation: none; }
+  :where(.teacher-page, .admin-page) button, .s-theme-sun, .s-theme-moon, .s-rail-btn::after, .s-theme::after { transition: none; }
+}
+/* 아이디·비밀번호 폼. 선생님·관리 화면에서 같은 칸을 쓴다. */
+.p-form { display: grid; gap: 16px; align-content: start; width: 100%; max-width: 520px; }
+.p-field { display: grid; gap: 7px; font-size: .95rem; }
+.p-field input { min-width: 0; width: 100%; min-height: 44px; }
+/* 글 단추(「비밀번호를 잊었어요」 · 「로그인으로」 · 「운영자 연락처」): 밑줄 글, 높이 바닥은 쪽 공통 단추 그대로(폰 44px) */
+:where(.teacher-page, .admin-page) button.p-link {
+  justify-self: start; padding: 4px 0; border: 0; border-radius: 0; background: none;
+  color: var(--c-accent-ink); font-weight: 500; text-decoration: underline; text-underline-offset: 3px;
+}
+:where(.teacher-page, .admin-page) button.p-link:not(:disabled):hover { background: none; color: var(--c-text); }
+.p-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+.p-row > .primary { flex: 1 1 12em; }
+/* 맨 위 계정 칸이 단추일 때(아이디 계정, 「내 계정」 시트를 연다). 글 크기는 칸 규칙(.t-account · .a-account) 그대로 */
+button.s-pill { font-weight: 400; line-height: inherit; color: inherit; text-align: left; cursor: pointer; min-height: 0; }
+button.s-pill:not(:disabled):hover { background: var(--c-hover); }
+
+/* ── 계정 열쇠 카드(app/account-key.js, 설계서 4-2): 크게, 낱말 사이를 띄워서. 화면 쪽은 판 안(.t-card · .a-card · 내 계정 시트) ── */
+.k-card { display: grid; gap: 14px; align-content: start; max-width: 680px; }
+.k-lead { margin: 0; line-height: 1.6; color: var(--c-text-2); }
+.k-facts { display: grid; gap: 12px; margin: 0; }
+.k-facts > div { display: grid; gap: 4px; }
+.k-facts dt { color: var(--c-text-2); font-size: .875em; }
+.k-facts dd { margin: 0; }
+.k-facts code { font-family: Consolas, monospace; font-size: 1.0625em; }
+.k-key {
+  margin: 0; padding: 16px 20px; border-radius: 16px; background: var(--c-surface-2); border: 1px dashed var(--c-border-2);
+  font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.6rem); font-weight: 700; line-height: 1.3; letter-spacing: .02em; word-spacing: .45em; user-select: all;
+}
+.k-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.k-actions button { flex: 1 1 7em; min-height: 44px; }
+.k-print { display: none; }
+/* 노트북의 들어오는 화면만: 위 줄과 아이콘 줄은 그대로 두고 남은 높이 가운데에 둔다.
+   자동 여백은 칸이 높아지면 0이 되어 위부터 놓이며, 쪽이 늘어나도 내용을 자르지 않는다.
+   오른쪽 칸은 안쪽 40px을 빼고도 입력 폭이 남게 한다. 내 계정 시트와 로그인 뒤 화면에는 적용하지 않는다. */
+@media screen and (min-width: 1100px) {
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"]) :is(#teacher, #admin) {
+    padding-block: 16px;
+  }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"]) .s-main > :is(.t-card, .a-card) {
+    flex: none; margin-block: auto; padding: 40px; font-size: 18px;
+  }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"]) .s-main > :is(.t-split, .a-split) {
+    grid-template-columns: minmax(0, 1fr) minmax(600px, 1.15fr); align-items: center; gap: 32px;
+  }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"]) .s-main > :is(.t-card, .a-card) h2 { font-size: 40px; }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"]) .s-main :is(.t-lead, .a-lead, .k-lead) { font-size: 18px; }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"]) .s-main .t-note { font-size: 16px; }
+  body:is([data-screen="login"], [data-screen="forgot"]) .s-main :is(.t-action, .a-action) { padding: 40px; }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"]) .s-main .p-form { max-width: none; }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"]) .s-main .p-field { font-size: 17px; }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"]) .s-main .p-field input { min-height: 52px; font-size: 18px; }
+  body:is([data-screen="login"], [data-screen="forgot"], [data-screen="password"], [data-screen="key"]) .s-main :is(.p-form, .k-actions) button { min-height: 52px; font-size: 18px; }
+  body:is([data-screen="login"], [data-screen="forgot"]) .s-main button.p-link { min-height: 44px; font-size: 16px; }
+  body:is([data-screen="login"], [data-screen="forgot"]) .s-main :is(.privacy-note, .privacy-link) { font-size: 15px; }
+  body[data-screen="key"] .s-main .k-card { max-width: none; grid-template-columns: minmax(0, 1fr) minmax(520px, 1.15fr); gap: 20px 40px; align-items: center; }
+  body[data-screen="key"] .s-main .k-card h2 { grid-area: 1 / 1; }
+  body[data-screen="key"] .s-main .k-lead { grid-area: 2 / 1; align-self: start; }
+  body[data-screen="key"] .s-main .k-facts { grid-area: 1 / 2 / 3 / 3; }
+  body[data-screen="key"] .s-main .k-facts dt { font-size: 17px; }
+  body[data-screen="key"] .s-main .k-actions { grid-area: 3 / 2; }
+}
+@media print {
+  body::before { display: none !important; } /* 로그인 배경 그림은 종이에 찍지 않는다 */
+  /* [인쇄]: 카드 사본(.k-print)만, 어두운 판이어도 흰 종이에 검은 글 */
+  body[data-printing="key"]:has(> .k-print) > :not(.k-print) { display: none !important; }
+  body[data-printing="key"] { background: #fff !important; color: #000 !important; }
+  body[data-printing="key"] > .k-print { display: block; }
+  .k-print .k-card { max-width: none; padding: 8mm; color: #000; background: #fff; border: 1px dashed #777; }
+  .k-print .k-key { color: #000; background: #fff; border-color: #777; }
+  .k-print :is(.k-lead, .k-facts dt) { color: #333; }
+  .k-print :is(.k-actions, .t-msg) { display: none !important; }
+}
+
+/* ── 「내 계정」 시트(app/my-account.js): 아이디 · 학교 · 학년 반, [새 열쇠 받기] [비밀번호 바꾸기] ── */
+.sheet.my-sheet { gap: 16px; }
+@media (min-width: 700px) { .sheet.my-sheet { width: min(560px, 92vw); } }
+.my-body { display: grid; gap: 14px; }
+.my-facts { display: grid; gap: 8px; margin: 0; }
+.my-facts > div { display: grid; grid-template-columns: 6em minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.my-facts dt { color: var(--c-text-2); font-size: .875em; }
+.my-facts dd { margin: 0; overflow-wrap: anywhere; }
+.my-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.my-actions button { flex: 1 1 10em; min-height: 44px; }
+.my-warn { margin: 0; line-height: 1.6; }
+.my-form { max-width: none; }
+@media (min-width: 760px) {
+  body[data-accounts="true"] { min-height: 100dvh; display: flex; flex-direction: column; }
+  body[data-accounts="true"] > .s-app { min-height: 0; flex: 1; }
+}

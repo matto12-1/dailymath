@@ -1,0 +1,1015 @@
+/* 선생님 화면(app/teacher.html)에만 있는 생김새. app.css → staff.css(색 값 두 판·글꼴·쪽 공통 규칙·맨 위 줄과 아이콘 줄 틀·알림 줄·
+   구글 로그인 칸·시트 바탕·밝기 단추·푸터 색·폰 단추 44px 바닥) 다음에 읽는다. 색은 staff.css의 이름 붙은 값(--c-*)만 쓴다.
+   배치(2026-10-22 오후 결정, code.xr 「Dashboard V14」 결):
+   - 맨 위 줄: 「매일 수학」 · 쪽 알약 탭(누른 탭은 먹색 알약, 색은 2026-10-22 저녁 「살구·먹색」) · 「5학년 3반 ▾」 반 고르기 · 선생님 칸. 1100px 아래는 탭이 둘째 줄.
+   - 왼쪽 얇은 아이콘 줄(밝기 · 개인정보 안내 · 로그아웃, 틀은 staff.css). 반 목록 쪽은 없다(2026-10-23): 반 바꾸기·새 반은 반 고르기에서.
+   - 반 대시보드 쪽은 한 화면(1366×768 · 1280×800 · 810×1080)에 든다: 쪽 머리(큰 제목 · 설명 · 알약 단추) 아래 남은 높이를
+     칸들이 나눠 채운다(가운데 좁게 묶지 않고 폭 전체). 아이별 표는 그 높이 안에서만 내려가고 표 머리는 붙어 있다.
+     MattoLAB 푸터는 한 화면 아래(내려야 보인다). 760px 아래(폰)는 위아래로 쌓고 쪽을 내려 본다, 표 줄은 아이마다 카드.
+   - 쪽을 바꾸면(.t-board.t-enter) 칸마다 회색 뼈대가 먼저 뜨고 칸이 30~45ms씩 늦게 차례로 나타나며 제목은 흐림에서 또렷해진다.
+     움직임 줄이기 설정이면 없다.
+   단추·칸 그림은 CSS가 단다(::before 가림 그림, 아래 --i-*): 부르는 동안 단추 글을 바꿔도(busy) 그림이 남는다. */
+
+.teacher-page {
+  --i-copy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='8.5' y='8.5' width='12' height='12' rx='2.2'/%3E%3Cpath d='M15.5 8.5V6a2.5 2.5 0 0 0-2.5-2.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5'/%3E%3C/svg%3E");
+  --i-refresh: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.5 12a8.5 8.5 0 1 1-2.5-6l2.5 2.5'/%3E%3Cpath d='M20.5 3.5v5h-5'/%3E%3C/svg%3E");
+  --i-kids: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20'/%3E%3Ccircle cx='9.5' cy='7.5' r='3.5'/%3E%3Cpath d='M21 20v-1.5a4 4 0 0 0-3-3.87M15.5 4.2a3.5 3.5 0 0 1 0 6.6'/%3E%3C/svg%3E");
+  --i-today: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='2.5'/%3E%3Cpath d='M8 3v4M16 3v4M3.5 10h17'/%3E%3Cpath d='m9 15 2 2 4-4'/%3E%3C/svg%3E");
+  --i-target: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Ccircle cx='12' cy='12' r='4.5'/%3E%3Ccircle cx='12' cy='12' r='.8' fill='black'/%3E%3C/svg%3E");
+  --i-flag: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4M5 4.5h11.5l-2 4 2 4H5'/%3E%3C/svg%3E");
+  --i-lock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4.5' y='10.5' width='15' height='10' rx='2.5'/%3E%3Cpath d='M8 10.5V7.5a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");
+  --i-picture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='4.5' width='17' height='15' rx='2.5'/%3E%3Ccircle cx='9' cy='10' r='1.8'/%3E%3Cpath d='m20.5 16-4.5-4.5L6 20'/%3E%3C/svg%3E");
+  --i-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E");
+  --i-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3.5 7 6 6 4-4 7 7'/%3E%3Cpath d='M14.5 16h6v-6'/%3E%3C/svg%3E");
+  --i-alert: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4 2.8 19.5h18.4Z'/%3E%3Cpath d='M12 10v4.5M12 17.2v.01'/%3E%3C/svg%3E");
+  --i-users: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E");
+  --i-power: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 3.5V11'/%3E%3Cpath d='M6.6 6.6a7.5 7.5 0 1 0 10.8 0'/%3E%3C/svg%3E");
+  --i-chat: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.5 12a8 8 0 0 1-11.8 7L3.5 20.5 5 15.6A8 8 0 1 1 20.5 12Z'/%3E%3C/svg%3E");
+  --i-chev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6.5 9.5 5.5 5.5 5.5-5.5'/%3E%3C/svg%3E");
+  --i-search: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='m16 16 4.5 4.5'/%3E%3C/svg%3E");
+}
+/* 가림 그림 한 칸: 그 요소에 --ico를 주면 글 앞에 16px 그림(글 색) */
+:is(.t-pill, .t-tile, .t-pick-btn)::before {
+  content: ''; flex: none; width: 16px; height: 16px; background: currentColor;
+  -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat;
+}
+:where(.teacher-page) [hidden] { display: none !important; }
+
+/* ── 공통(이 쪽에만 있는 입력 칸) ── 쪽 공통 요소 규칙과 같이 :where(.teacher-page)로 점수를 낮춘다(staff.css 머리 설명) */
+:where(.teacher-page) :is(.t-form, .t-size-form) :is(input, select) { min-height: 44px; }
+:where(.teacher-page) select { width: 100%; }
+:where(.teacher-page) input[type="file"] { padding: .4em; background: var(--c-surface); }
+:where(.teacher-page) input[type="file"]::file-selector-button { font: inherit; font-weight: 600; color: var(--c-text); border: 1px solid var(--c-border-2); background: var(--c-surface-2); border-radius: 999px; padding: .3em .9em; margin-right: .8em; cursor: pointer; }
+
+.t-note, .t-hint { color: var(--c-text-2); }
+.t-hint { font-size: .8125em; margin: 0; }
+.t-none { color: var(--c-text-2); }
+.t-loading { color: var(--c-text-2); text-align: center; padding: 3em 0; }
+.t-alert { background: var(--c-bad-soft); border: 1px solid var(--c-bad-line); color: var(--c-bad-ink); border-radius: 14px; padding: .75em 1em; display: grid; gap: .3em; }
+.t-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+/* 상태 꼬리표: 작은 둥근 칸, 앞에 점 */
+.t-tag {
+  display: inline-flex; align-items: center; gap: 5px; padding: .1em .6em; border-radius: 999px; border: 1px solid transparent;
+  font-size: .75rem; font-weight: 600; line-height: 1.55; white-space: nowrap; vertical-align: middle;
+}
+.t-tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.t-tag.locked { color: var(--c-bad-ink); background: var(--c-bad-soft); border-color: var(--c-bad-line); }
+.t-tag.reset, .t-tag.open { color: var(--c-good-ink); background: var(--c-good-soft); border-color: var(--c-good-line); }
+.t-tag.closed { color: var(--c-text-2); background: var(--c-surface-2); border-color: var(--c-border-2); }
+.t-copy-msg { color: var(--c-good-ink); font-size: .875em; }
+.t-copy-msg:empty { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+/* ── 맨 위 줄(틀은 staff.css .s-top): 이름 · 쪽 탭 · 반 고르기 · 선생님 칸 ── */
+.t-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "brand tabs pick me"; align-items: center; gap: 10px 12px; }
+.t-brand { grid-area: brand; justify-self: start; }
+.t-pages { grid-area: tabs; justify-self: center; padding: 5px; gap: 2px; max-width: 100%; }
+.t-pick-box { grid-area: pick; min-width: 0; }
+.t-head > .s-top-end { grid-area: me; } /* 선생님 칸 · MattoLAB 글자(들어오는 쪽에서만, staff.css) */
+[data-shell="plain"] .t-head { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "brand . me"; }
+.t-page-tab {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 18px; border-radius: 999px;
+  color: var(--c-text); font-size: .9375em; font-weight: 500; text-decoration: none; white-space: nowrap;
+  transition: background-color .15s ease, color .15s ease;
+}
+.t-page-tab:hover { background: var(--c-hover); }
+.t-page-tab[aria-current="page"] { background: var(--c-accent); color: var(--c-on-accent); font-weight: 600; }
+
+/* 반 고르기: 흰 알약 단추와 아래로 펼치는 목록 */
+.t-pick { position: relative; }
+.t-pick-btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 48px; max-width: 100%; padding: 0 16px 0 18px; border: 1px solid var(--c-border);
+  border-radius: 999px; background: var(--c-surface); box-shadow: var(--c-shadow); font-size: .9375em; font-weight: 650; white-space: nowrap;
+  --ico: var(--i-kids);
+}
+.t-pick-btn::after { content: ''; width: 16px; height: 16px; background: var(--c-text-2); -webkit-mask: var(--i-chev) center / contain no-repeat; mask: var(--i-chev) center / contain no-repeat; transition: transform .15s ease; }
+.t-pick-btn[aria-expanded="true"]::after { transform: rotate(180deg); }
+.t-pick-text { overflow: hidden; text-overflow: ellipsis; }
+.t-pick-list {
+  position: absolute; z-index: 60; top: calc(100% + 8px); right: 0; min-width: 240px; max-height: min(420px, 70dvh); overflow-y: auto;
+  list-style: none; margin: 0; padding: 6px; display: grid; gap: 2px;
+  background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 18px; box-shadow: var(--c-pop);
+}
+.t-pick-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 42px; padding: 0 12px; border-radius: 12px;
+  color: var(--c-text); text-decoration: none; font-size: .9375em; font-weight: 500;
+}
+.t-pick-item:hover { background: var(--c-hover); }
+.t-pick-item[aria-current="page"] { background: var(--c-accent-soft); font-weight: 650; }
+.t-pick-tag { padding: 0 .55em; border: 1px solid var(--c-border-2); border-radius: 999px; color: var(--c-text-2); font-size: .75rem; font-weight: 600; }
+.t-pick-gap { height: 1px; margin: 4px 8px; background: var(--c-border); }
+.t-pick-new { color: var(--c-text-2); }
+
+/* 맨 위 줄 바로 아래, 같은 쪽 폭의 관리자 보기만 띠. 높이도 --s-top-h에 함께 잡힌다. */
+.t-admin-view {
+  grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; min-width: 0;
+  padding: 4px 16px; border: 1px solid var(--c-rate-line); border-radius: 14px;
+  background: var(--c-rate-bg); color: var(--c-rate-ink); font-size: .875em; line-height: 1.5;
+}
+.t-admin-view-text { min-width: 0; }
+.t-admin-view a { display: inline-flex; align-items: center; flex: none; min-height: 36px; color: inherit; font-weight: 650; text-underline-offset: 3px; white-space: nowrap; }
+@media (max-width: 759px) {
+  .t-admin-view { padding: 2px 10px; gap: 8px; font-size: 12px; }
+  .t-admin-view a { min-height: 44px; }
+}
+
+/* 선생님 칸: 동그라미 그림 · 학교(인증됨) · 메일. 늘 두 줄(학교 한 줄, 메일 한 줄), 길면 줄임표: 맨 위 줄 높이가 늘 같다.
+   전체 글은 칸의 title과 화면 읽개(글은 그대로 들어 있다)로 남는다(main.js) */
+.t-account { gap: 10px; padding: 5px 18px 5px 5px; max-width: min(360px, 32vw); }
+.t-avatar {
+  flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--c-surface-2); border: 1px solid var(--c-border);
+}
+.t-avatar::before { content: ''; width: 18px; height: 18px; background: var(--c-text-2); -webkit-mask: var(--i-users) center / contain no-repeat; mask: var(--i-users) center / contain no-repeat; }
+.t-me { display: grid; min-width: 0; line-height: 1.3; }
+.t-school, .t-who { min-width: 0; font-size: .8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-school { font-weight: 650; }
+.t-who { color: var(--c-text-2); }
+
+/* 아이콘 줄의 이 쪽 그림(밝기·개인정보·로그아웃은 staff.css) */
+.t-logout { min-height: 44px; }
+
+/* 1100px 아래: 쪽 탭이 둘째 줄 */
+@media (max-width: 1099px) {
+  .t-head { grid-template-areas: "brand . pick me" "tabs tabs tabs tabs"; }
+  .t-pages { justify-self: start; }
+  .t-account { max-width: min(300px, 40vw); }
+}
+
+/* ── 본문 ── */
+#teacher { display: flex; flex-direction: column; gap: var(--s-gap); padding: 12px var(--s-pad) 24px calc(var(--s-pad) * .5); }
+
+/* ── 본문 카드(로그인·교사 인증·확인 중·오류) ── */
+.t-card, .t-panel { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--s-radius); box-shadow: var(--c-shadow); min-width: 0; }
+.t-card { padding: clamp(22px, 2.6vw, 40px); display: grid; gap: 16px; }
+.t-panel { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+.t-card h2 { font-size: clamp(1.6rem, 1.15rem + 1vw, 2.1rem); font-weight: 600; letter-spacing: -.035em; }
+.t-panel h3 { font-size: 1.0625em; font-weight: 600; letter-spacing: -.02em; }
+.t-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; min-width: 0; }
+.t-lead { font-size: 1.0625em; line-height: 1.65; color: var(--c-text-2); }
+
+/* 로그인·교사 인증·확인 중: 넓으면 왼쪽 설명, 오른쪽 할 일 */
+.t-split { grid-template-columns: minmax(0, 1fr); align-items: start; gap: var(--s-gap); }
+.t-intro { display: grid; gap: 12px; align-content: start; }
+.t-action { display: grid; gap: 12px; align-content: start; background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: 16px; padding: clamp(18px, 2vw, 28px); }
+@media (min-width: 900px) { .t-split { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+.t-steps { margin: .3em 0 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 10px; }
+.t-steps li { counter-increment: step; display: grid; grid-template-columns: 2em minmax(0, 1fr); gap: 10px; align-items: center; }
+.t-steps li::before { content: counter(step); display: grid; place-items: center; width: 2em; height: 2em; border-radius: 50%; background: var(--c-accent); color: var(--c-on-accent); font-weight: 700; font-size: .8125em; }
+.t-form { display: grid; gap: 14px; }
+.t-field { display: grid; gap: 6px; min-width: 0; align-content: start; }
+.t-field input { width: 100%; }
+.t-label { font-size: .875em; font-weight: 600; }
+.t-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.t-row .t-field:first-child { grid-column: 1 / -1; } /* 학년은 한 줄, 반·인원은 나란히 */
+.t-facts { display: grid; gap: 8px; margin: 0; }
+.t-facts div { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.t-facts dt { color: var(--c-text-2); min-width: 5em; }
+.t-facts dd { margin: 0; overflow-wrap: anywhere; font-weight: 600; }
+
+/* ── 쪽 머리(대시보드): 큰 제목과 설명 한 줄, 오른쪽 알약 단추와 옅은 받은 때(사례 01·02·04) ── */
+.t-page-head, .t-board-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 24px; padding-top: 4px; }
+.t-page-titles { display: grid; gap: 6px; min-width: 0; }
+.t-page-title { margin: 0; font-size: clamp(1.9rem, 1.15rem + 1.35vw, 2.75rem); font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
+.t-page-lead { margin: 0; color: var(--c-text-2); font-size: 1.0625em; }
+.t-page-lead .t-class-title { color: var(--c-text); font-weight: 600; }
+.t-page-lead .t-tag { margin-left: 10px; vertical-align: .1em; }
+.t-page-tools { display: grid; justify-items: end; gap: 6px; }
+.t-pills { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; }
+.t-pill {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 20px 0 16px; border-radius: 999px;
+  font-size: .9375em; font-weight: 600; white-space: nowrap;
+}
+.t-copy { min-height: 44px; background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); --ico: var(--i-copy); }
+.t-copy:not(:disabled):hover { background: color-mix(in srgb, var(--c-accent) 84%, var(--c-bg)); }
+.t-pill-code { font-variant-numeric: tabular-nums; letter-spacing: .06em; font-weight: 700; }
+.t-refresh-btn { background: var(--c-surface); border-color: var(--c-border); --ico: var(--i-refresh); }
+.t-stamp { margin: 0; color: var(--c-text-2); font-size: .8125em; font-variant-numeric: tabular-nums; }
+.t-board-msg:not(:empty) { margin: -4px 0 0; }
+
+/* ── 새 반 만들기(#new · 반이 없을 때): 쪽 가운데 카드 하나에 제목 · 설명 · 폼(학년 · 반 · 인원) ── */
+.t-new-page { display: grid; justify-items: center; padding-top: clamp(8px, 4vh, 48px); }
+.t-new-card { width: min(560px, 100%); }
+.t-new-card .t-lead { margin: 0; }
+
+/* ── 반 대시보드 ──
+   한 화면: 대시보드는 맨 위 줄(--s-top-h, staff-shell.js가 잰다)과 본문 위아래 여백(12 + 24)을 뺀 높이를 채우고, 쪽 몸통이 남은 높이를
+   나눠 갖는다. 아이별 쪽은 그 높이에 묶어 표 안에서만 내려간다(너무 낮은 창이면 520px까지는 지키고 쪽이 내려간다). */
+.t-board { display: flex; flex-direction: column; gap: var(--s-gap); min-width: 0; container: t-board / inline-size; }
+.t-page-body { display: flex; flex-direction: column; gap: var(--s-gap); flex: 1 1 auto; min-height: 0; }
+@media (min-width: 760px) {
+  .t-board { min-height: calc(100dvh - var(--s-top-h, 72px) - 36px); }
+  .t-board[data-page="kids"] { height: calc(100dvh - var(--s-top-h, 72px) - 36px); min-height: 520px; }
+}
+
+/* 숫자 칸 넷: 반 정답률만 강조 칸(사례 01 Total Earnings 자리, 색은 옅은 살구 면에 짙은 같은 계열 글자), 나머지는 미색 칸.
+   오른쪽 위에 작은 동그라미 그림 */
+.t-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-gap); }
+.t-stat {
+  position: relative; display: grid; align-content: space-between; gap: 6px; min-height: 132px; padding: 18px 20px 16px; border-radius: var(--s-radius);
+  background: var(--c-surface); border: 1px solid var(--c-border); box-shadow: var(--c-shadow); min-width: 0;
+}
+.t-stat::before { content: ''; position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; background: var(--c-surface-2); border: 1px solid var(--c-border); }
+.t-stat::after {
+  content: ''; position: absolute; top: 23px; right: 23px; width: 16px; height: 16px; background: var(--c-text-2);
+  -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat;
+}
+.t-stat[data-stat="joined"] { --ico: var(--i-kids); }
+.t-stat[data-stat="today"] { --ico: var(--i-today); }
+.t-stat[data-stat="rate"] { --ico: var(--i-target); }
+.t-stat[data-stat="attention"] { --ico: var(--i-flag); }
+.t-stat p { margin: 0; }
+.t-stat-label { color: var(--c-text-2); font-size: .875em; font-weight: 500; padding-right: 40px; }
+.t-stat-value { display: flex; align-items: baseline; gap: 3px; line-height: 1; font-variant-numeric: tabular-nums; }
+.t-stat-num { font-size: clamp(2rem, 1.3rem + 1.4vw, 2.75rem); font-weight: 600; letter-spacing: -.04em; }
+.t-stat-unit { color: var(--c-text-2); font-size: 1.0625em; font-weight: 500; }
+.t-stat-none { font-size: 1.375em; font-weight: 600; }
+.t-stat-note { color: var(--c-text-2); font-size: .8125em; line-height: 1.4; }
+.t-stat[data-stat="rate"] { background: var(--c-rate-bg); border-color: var(--c-rate-line); color: var(--c-rate-ink); }
+.t-stat[data-stat="rate"] :is(.t-stat-label, .t-stat-unit, .t-stat-note) { color: var(--c-rate-ink-2); }
+.t-stat[data-stat="rate"]::before { background: var(--c-rate-chip); border-color: var(--c-rate-line); }
+.t-stat[data-stat="rate"]::after { background: var(--c-rate-ink); }
+
+/* 두 칸 줄(한눈에 보기 7:5 · 실수·접속 · 반 설정 1:1): 남은 높이를 채운다 */
+.t-duo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-gap); flex: 1 1 auto; min-height: 0; }
+.t-duo-overview { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.t-duo > .t-panel { min-height: 0; }
+
+/* 갈래별 맞힌 비율(사례 01 Profit and Loss): 가는 세로 막대 다섯, 뒤에 옅은 가로 눈금(0·25·50·75·100%)과 왼쪽 작은 눈금 글자.
+   막대는 옅은 따뜻한 회색(--c-bar), 맞힌 비율이 가장 낮은 갈래 하나만 살구·코랄(--c-orange, board.js data-low).
+   칸이 높아져도 막대 줄은 --plot-max(520px)까지만 자라고(아주 큰 화면에서 막대가 기둥처럼 길어지지 않게) 남는 높이는 그림 위아래로
+   고르게 나눈다. 1920×1080 · 810×1080에서는 거의 끝까지 차서 그림 위아래에 빈 띠가 없다.
+   눈금 줄(.t-axis)은 막대 줄과 같은 자리: 위는 퍼센트 줄, 아래는 이름·수 줄을 뺀 곳(줄 높이를 같은 값으로 묶었다) */
+.t-strands { container-type: inline-size; }
+.t-chart {
+  --pct-h: 22px; --name-h: 20px; --count-h: 16px; --row-gap: 6px; --axis-w: 36px; --plot-max: 520px;
+  position: relative; flex: 1 1 auto; display: flex; min-height: 220px; margin-block: auto; padding-left: var(--axis-w);
+  max-height: calc(var(--pct-h) + var(--name-h) + var(--count-h) + 3 * var(--row-gap) + var(--plot-max));
+}
+.t-axis { position: absolute; left: 0; right: 0; top: calc(var(--pct-h) + var(--row-gap)); bottom: calc(var(--name-h) + var(--count-h) + 2 * var(--row-gap)); pointer-events: none; }
+.t-axis-line { position: absolute; left: var(--axis-w); right: 0; bottom: calc(var(--at, 0) * 100%); border-top: 1px solid var(--c-border); }
+.t-axis-line:last-child { border-top-color: var(--c-border-2); }
+.t-axis-text {
+  position: absolute; right: calc(100% + 8px); top: 0; transform: translateY(-50%); color: var(--c-text-2); font-size: .6875rem; line-height: 1;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.t-strand-list { position: relative; list-style: none; margin: 0; padding: 0; flex: 1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0 clamp(4px, 1.5cqi, 20px); }
+.t-strand-list li { display: grid; grid-template-rows: var(--pct-h) minmax(0, 1fr) var(--name-h) var(--count-h); row-gap: var(--row-gap); justify-items: center; min-width: 0; text-align: center; }
+.t-rate-pct { align-self: end; font-size: .9375em; font-weight: 650; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; white-space: nowrap; }
+[data-empty="true"] .t-rate-pct { color: var(--c-text-2); font-size: .75em; font-weight: 500; }
+[data-low="true"] .t-rate-pct { color: var(--c-orange-ink); }
+.t-bar { position: relative; display: flex; align-items: flex-end; width: clamp(28px, 32%, 40px); height: 100%; }
+.t-bar-fill { display: block; width: 100%; height: calc(var(--rate, 0) * 100%); border-radius: 8px 8px 3px 3px; background: var(--c-bar); }
+[data-low="true"] .t-bar-fill { background: var(--c-orange); }
+[data-empty="true"] .t-bar { align-self: end; height: 14px; border: 1px dashed var(--c-border-2); border-radius: 6px; background: repeating-linear-gradient(135deg, var(--c-bar-track) 0 4px, transparent 4px 8px); }
+.t-strand-name { align-self: center; font-weight: 600; font-size: .875em; line-height: 1.2; white-space: nowrap; }
+.t-rate-count { align-self: start; color: var(--c-text-2); font-size: .75em; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.t-legend { display: inline-flex; align-items: center; gap: 6px; margin-right: 12px; color: var(--c-text-2); font-weight: 600; }
+.t-legend::before { content: ''; flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--c-orange); }
+
+/* 살펴볼 아이: 까닭 그림 동그라미 · 번호와 이름 · 작은 까닭 꼬리표(사례 06 Points history) */
+.t-attention { container-type: inline-size; }
+.t-more { min-height: 36px; padding: 0 14px; font-size: .8125em; }
+.t-attn-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; }
+/* 노트북·태블릿: 목록은 칸의 남은 높이만 갖는다(board.js fitAttention이 들어가는 만큼 줄을 보인다) */
+@media (min-width: 760px) { .t-attn-list { flex: 1 1 0; min-height: 0; overflow: hidden; } }
+.t-attn-list li {
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: calc(10px + var(--attn-spread, 0px)) 0;
+  border-top: 1px solid var(--c-border);
+}
+.t-attn-list li:first-child { border-top: 0; padding-top: 0; }
+.t-attn-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--c-surface-2); border: 1px solid var(--c-border); color: var(--c-text-2); }
+.t-attn-icon::before { content: ''; width: 18px; height: 18px; background: currentColor; -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+[data-reason="locked"] > .t-attn-icon { --ico: var(--i-lock); color: var(--c-bad-ink); }
+[data-reason="reset"] > .t-attn-icon { --ico: var(--i-picture); color: var(--c-good-ink); }
+[data-reason="away"] > .t-attn-icon { --ico: var(--i-clock); }
+[data-reason="low"] > .t-attn-icon { --ico: var(--i-down); color: var(--c-orange-ink); }
+.t-attn-who { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.t-attn-num { font-variant-numeric: tabular-nums; }
+.t-attn-name { font-weight: 600; }
+.t-attn-num:has(+ .t-attn-name), .t-attn-who > .t-attn-num:not(:only-child) { color: var(--c-text-2); font-weight: 500; }
+.t-attn-why {
+  justify-self: end; padding: .15em .65em; border-radius: 999px; font-size: .75rem; font-weight: 600; line-height: 1.55; white-space: nowrap;
+  background: var(--c-surface-2); color: var(--c-text-2); border: 1px solid var(--c-border);
+}
+[data-reason="locked"] > .t-attn-why { background: var(--c-bad-soft); color: var(--c-bad-ink); border-color: var(--c-bad-line); }
+[data-reason="reset"] > .t-attn-why { background: var(--c-good-soft); color: var(--c-good-ink); border-color: var(--c-good-line); }
+@container (max-width: 400px) {
+  .t-attn-list li { grid-template-columns: 40px minmax(0, 1fr); }
+  .t-attn-icon { grid-row: span 2; }
+  .t-attn-why { grid-column: 2; justify-self: start; }
+}
+.t-attn-none { margin: auto 0; text-align: center; }
+/* 살펴볼 까닭 풀이: 넓은 화면에서 줄을 다 보이고도 칸 아래가 남을 때만(board.js fitAttention). 까닭마다 그림 · 이름 · 몇 명 */
+.t-why { flex: none; display: grid; gap: 10px; padding: 14px 16px; border-radius: 16px; background: var(--c-surface-2); }
+.t-why-title { margin: 0; color: var(--c-text-2); font-size: .8125em; font-weight: 600; }
+.t-why-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; }
+.t-why-list li { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-width: 0; }
+.t-why-list .t-attn-icon { width: 32px; height: 32px; background: var(--c-surface); }
+.t-why-list .t-attn-icon::before { width: 16px; height: 16px; }
+.t-why-text { min-width: 0; font-size: .875em; font-weight: 600; }
+.t-why-n { color: var(--c-text-2); font-size: .875em; font-weight: 600; font-variant-numeric: tabular-nums; }
+.t-why-list [data-zero="true"] :is(.t-why-text, .t-why-n) { color: var(--c-text-2); font-weight: 500; }
+.t-why[data-cols="1"] .t-why-list { grid-template-columns: minmax(0, 1fr); }
+@container (max-width: 420px) { .t-why-list { grid-template-columns: minmax(0, 1fr); } }
+
+/* 실수·접속: 줄마다 이름 · 수 · 아래 가는 막대(가장 큰 것을 끝까지로). 두 칸은 내용 높이(높은 칸에 맞춰 둘이 같고, 줄 높이도 칸마다
+   고르게)로 쪽 머리 바로 아래에 붙이고, 남는 높이는 쪽 끝 아래로 보낸다(2026-10-22 3차: 줄 사이만 넓던 것 → 3차 뒤: 가운데에 두니
+   810에서 쪽 위쪽이 비던 것). 반 설정도 같다. 낮은 칸의 줄이 몇 개 안 되거나 「아직 없어요」면 그 칸은 늘리지 않는다(줄 여백은
+   한 줄에 24px까지, board.js fitActivity: 실수 두 줄이 옆 칸 높이로 늘어 칸 안에 95px 빈 띠가 생기던 것) */
+@media (min-width: 760px) { .t-board:is([data-page="activity"], [data-page="settings"]) .t-duo { flex: 0 1 auto; margin-block: 0 auto; } }
+.t-top-mistakes, .t-rank-list { list-style: none; margin: 0; padding: 0; flex: 1 1 auto; display: grid; grid-auto-rows: 1fr; gap: 0; }
+.t-top-mistakes li, .t-rank-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: center; align-items: center; gap: 8px 12px; padding: calc(8px + var(--row-spread, 0px) / 2) 0; }
+.t-line-bar { grid-column: 1 / -1; display: block; height: 8px; border-radius: 999px; background: var(--c-bar-track); overflow: hidden; }
+.t-line-fill { display: block; height: 100%; width: max(8px, calc(var(--share, 0) * 100%)); border-radius: inherit; background: var(--c-line); }
+.t-mistake-name { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.t-mistake-kids { color: var(--c-text-2); font-size: .875em; font-weight: 600; font-variant-numeric: tabular-nums; }
+.t-mistake-who { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; margin: 0; }
+.t-num-chip {
+  display: inline-flex; align-items: center; padding: .1em .6em; border-radius: 999px; font-size: .75rem; font-weight: 600; line-height: 1.6;
+  background: var(--c-surface-2); color: var(--c-text-2); border: 1px solid var(--c-border); font-variant-numeric: tabular-nums;
+}
+.t-num-more { align-self: center; color: var(--c-text-2); font-size: .75rem; }
+.t-rank-list { counter-reset: rank; }
+.t-rank-list li { counter-increment: rank; grid-template-columns: 32px minmax(0, 1fr) auto; }
+.t-rank-list li::before {
+  content: counter(rank); display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--c-surface-2); border: 1px solid var(--c-border); color: var(--c-text-2); font-size: .8125em; font-weight: 700;
+}
+.t-rank-list li:first-child::before { background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); }
+.t-rank-list .t-line-bar { grid-column: 2 / -1; }
+.t-kid-who { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.t-kid-num { font-variant-numeric: tabular-nums; }
+.t-kid-name:empty { display: none; }
+.t-kid-visits { color: var(--c-text-2); font-size: .875em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 반 설정: 왼쪽 반 코드 먹색 카드(사례 04 Your cards), 오른쪽 알려 줄 말 · 인원 · 반 닫기 줄(사례 04 Card controls) */
+.t-code-panel { container-type: inline-size; }
+.t-code-stage { flex: 1 1 auto; display: grid; place-items: center; min-height: 0; padding: clamp(16px, 2.4vw, 32px); border-radius: 16px; background: var(--c-surface-2); }
+/* 노트북·가로 태블릿(두 칸 나란히): 옆 칸(반 다루기)이 더 높아 이 칸이 늘어나면 카드가 무대 높이를 채운다(무대 안 카드 위아래에 빈
+   띠가 남지 않게). 태블릿 세로(810)는 두 칸을 위아래로 쌓으니 카드는 가로 카드 그대로, 무대는 내용 높이(아래 「쪽 몸통이 좁으면」).
+   폰은 칸이 늘어나지 않으니 그대로 */
+@media (min-width: 760px) { .t-code-card { min-height: 100%; } }
+.t-code-card {
+  display: grid; grid-template-rows: auto 1fr auto; gap: 8px; width: min(100%, 420px); aspect-ratio: 1.586; padding: clamp(16px, 2vw, 24px) clamp(18px, 2.2vw, 26px);
+  border-radius: 22px; color: var(--c-card-ink); min-width: 0; border: 1px solid var(--c-card-line);
+  background: radial-gradient(90% 120% at 100% 0%, rgba(255, 255, 255, .06), transparent 55%), var(--c-card-bg);
+  box-shadow: var(--c-card-shadow);
+}
+.t-code-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.t-code-card-label { font-size: .8125em; color: var(--c-card-sub); }
+.t-code-state { padding: .1em .7em; border-radius: 999px; background: var(--c-state-bg); color: var(--c-state-ink); font-size: .75rem; font-weight: 650; }
+.t-code-card.closed .t-code-state { background: transparent; color: var(--c-card-ink); border: 1px solid var(--c-card-sub); }
+.t-code-big { align-self: center; font-size: clamp(2.3rem, 1.4rem + 2.4vw, 3.6rem); font-weight: 600; letter-spacing: .14em; line-height: 1; font-variant-numeric: tabular-nums; }
+.t-code-card-foot { display: flex; flex-wrap: wrap; gap: 6px 22px; }
+.t-code-card-foot > span { display: grid; gap: 2px; font-weight: 600; font-size: .9375em; }
+.t-code-card-foot small { color: var(--c-card-sub); font-size: .75rem; font-weight: 500; }
+.t-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.t-tile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 76px; padding: 10px; border-radius: 16px;
+  background: var(--c-surface-2); border: 1px solid var(--c-border); font-size: .875em; font-weight: 600;
+}
+.t-tile::before { width: 20px; height: 20px; --ico: var(--i-copy); }
+.t-tell-copy::before { --ico: var(--i-chat); }
+.t-settings { gap: 6px; }
+.t-settings .t-panel-head { margin-bottom: 8px; }
+.t-tell-box { display: grid; gap: 4px; padding: 14px 16px; border-radius: 16px; background: var(--c-surface-2); margin-bottom: 6px; }
+.t-tell-label { margin: 0; color: var(--c-text-2); font-size: .8125em; font-weight: 600; }
+.t-tell { margin: 0; font-size: 1.0625em; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+.t-set-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 8px 14px; padding: 14px 0; border-top: 1px solid var(--c-border); }
+.t-set-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--c-surface-2); border: 1px solid var(--c-border); color: var(--c-text-2); }
+.t-set-icon::before { content: ''; width: 18px; height: 18px; background: currentColor; -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+[data-row="size"] > .t-set-icon { --ico: var(--i-users); }
+[data-row="close"] > .t-set-icon { --ico: var(--i-power); }
+.t-set-text p { margin: 0; }
+.t-set-title { font-weight: 600; }
+.t-set-note { color: var(--c-text-2); font-size: .8125em; line-height: 1.45; }
+.t-set-action { display: flex; justify-content: flex-end; }
+.t-size-form { display: flex; align-items: center; gap: 8px; }
+.t-size-form input { width: 5.5em; text-align: center; font-variant-numeric: tabular-nums; }
+.t-quiet { color: var(--c-bad-ink); border-color: var(--c-bad-line); background: var(--c-surface); }
+.t-quiet:not(:disabled):hover { background: var(--c-bad-soft); }
+.t-join-box { display: grid; gap: 10px; padding: 16px 18px; border-radius: 16px; background: var(--c-surface-2); }
+/* 노트북·태블릿: 두 칸은 내용 높이(위 실수·접속과 같은 규칙)라 오른쪽 칸 안에 큰 빈 띠가 생기지 않는다. 왼쪽 먹색 카드 칸이 더
+   높으면 그 차이만 인원 · 반 닫기 · 들어온 아이가 나눠 가진다(내용은 가운데). 두 칸은 같은 줄이라 위아래 끝이 같다 */
+@media (min-width: 760px) {
+  .t-settings > :is(.t-set-row, .t-join-box) { flex: 1 1 auto; }
+  .t-join-box { align-content: center; }
+}
+.t-join-box p { margin: 0; }
+.t-join-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.t-join-label { color: var(--c-text-2); font-size: .8125em; font-weight: 600; }
+.t-join-num { color: var(--c-text-2); font-size: .9375em; font-variant-numeric: tabular-nums; }
+.t-join-num strong { color: var(--c-text); font-size: 1.6em; font-weight: 600; letter-spacing: -.03em; }
+.t-join-box .t-line-bar { background: var(--c-border); }
+.t-join-missing { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--c-text-2); font-size: .8125em; }
+.t-join-missing-label { flex-basis: 100%; font-weight: 600; }
+.t-join-missing .t-num-chip { padding: .3em .85em; background: var(--c-surface); color: var(--c-text); font-size: .875rem; }
+@container (max-width: 900px) {
+  .t-set-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .t-set-action { grid-column: 2; justify-content: flex-start; }
+}
+
+/* 태블릿 세로(쪽 몸통 900px 아래, 810×1080이면 약 700px): 실수·접속과 반 설정의 두 칸은 나란히 두지 않고 위아래로 쌓아 폭 전체를
+   쓴다(많이 나온 실수 → 접속 순위, 반 코드 → 반 다루기). 쪽 끝에 남는 높이는 칸 안 줄 사이가 고르게 나눠 가진다: 실수·접속은 두
+   목록의 줄 위아래 여백으로(board.js fitActivity, 한 줄에 24px까지: 줄이 몇 개 안 되면 줄 사이가 휑해지지 않게 나머지는 쪽 끝에
+   남긴다), 반 설정은 반 다루기 칸이 쪽 끝까지 늘어 인원 · 반 닫기 · 들어온 아이가 나눠 갖는다(반 코드 칸은 내용 높이).
+   (2026-10-22 밤: 나란히 두니 두 칸 아래에 쪽 높이 3분의 1이 비고, 좁은 반 코드 카드가 세로로 서서 숫자 위아래가 휑하던 것).
+   반 코드 카드는 노트북과 같은 가로 카드, 무대는 내용 높이, 복사 단추 둘은 카드 아래 한 줄. 반 다루기 줄은 폭이 넉넉하니 단추가
+   글 오른쪽에 다시 선다. 한 화면(810×1080) 안에 들도록 칸 안 여백을 조금 줄인다 */
+@media (min-width: 760px) {
+  @container t-board (max-width: 900px) {
+    .t-board:is([data-page="activity"], [data-page="settings"]) .t-duo { grid-template-columns: minmax(0, 1fr); }
+    .t-board[data-page="settings"] .t-duo { flex: 1 1 auto; margin-block: 0; grid-template-rows: auto minmax(0, 1fr); }
+    .t-board[data-page="activity"] .t-duo > .t-panel { padding-block: 16px; gap: 10px; }
+    .t-top-mistakes li, .t-rank-list li { padding-block: calc(5px + var(--row-spread, 0px) / 2); row-gap: 6px; }
+    .t-board[data-page="settings"] .t-duo > .t-panel { padding-block: 14px; }
+    .t-code-panel { gap: 8px; }
+    .t-code-stage { flex: none; padding: 12px; }
+    .t-code-card { width: min(100%, 360px); min-height: auto; }
+    .t-tile { flex-direction: row; min-height: 40px; }
+    .t-settings .t-panel-head { margin-bottom: 4px; }
+    .t-tell-box { padding: 8px 16px; margin-bottom: 0; }
+    .t-set-row { grid-template-columns: 40px minmax(0, 1fr) auto; padding: 6px 0; }
+    .t-set-action { grid-column: auto; justify-content: flex-end; }
+    .t-join-box { padding: 10px 18px; gap: 6px; }
+    .t-join-missing { gap: 5px; }
+    .t-join-missing .t-num-chip { padding-block: .18em; }
+  }
+}
+
+/* 아이별: 위에 거르기 탭과 찾기 칸, 아래 표(머리는 붙어 있고 표 안에서만 내려간다), 맨 아래 이름 안내 */
+.t-kids { padding: 0; gap: 0; flex: 1 1 auto; min-height: 0; }
+.t-kids-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 16px 18px 12px; }
+.t-names-note { margin: 0; padding: 10px 20px 14px; color: var(--c-text-2); font-size: .8125em; border-top: 1px solid var(--c-border); }
+.t-tabs { display: flex; flex-wrap: wrap; gap: 2px; padding: 4px; border-radius: 999px; background: var(--c-surface-2); border: 1px solid var(--c-border); }
+.t-tab {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 16px; border: 0; border-radius: 999px;
+  background: transparent; color: var(--c-text-2); font-size: .875em; font-weight: 600;
+}
+.t-tab:not(:disabled):hover { background: var(--c-hover); color: var(--c-text); }
+.t-tab[aria-selected="true"] { background: var(--c-accent); color: var(--c-on-accent); }
+.t-tab-n { min-width: 1.8em; padding: 0 .45em; border-radius: 999px; background: var(--c-bar-track); color: var(--c-text-2); font-size: .8125em; text-align: center; font-variant-numeric: tabular-nums; }
+.t-tab[aria-selected="true"] .t-tab-n { background: color-mix(in srgb, var(--c-on-accent) 18%, transparent); color: var(--c-on-accent); }
+.t-search-box { position: relative; flex: 0 1 300px; min-width: 200px; }
+.t-search-box::before {
+  content: ''; position: absolute; left: 14px; top: 50%; width: 17px; height: 17px; transform: translateY(-50%); background: var(--c-text-2); pointer-events: none;
+  -webkit-mask: var(--i-search) center / contain no-repeat; mask: var(--i-search) center / contain no-repeat;
+}
+.t-search { width: 100%; min-height: 44px; padding-left: 40px; border-radius: 999px; background: var(--c-surface); border-color: var(--c-border); }
+/* position: relative — 표 안의 화면 읽개 글(.s-sr · 태블릿의 접속 횟수)이 표 밖 쪽 높이를 늘리지 않게 이 칸 안에 묶는다 */
+.t-table-wrap { position: relative; flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; border-top: 1px solid var(--c-border); }
+
+/* 짧은 칸(번호·날짜·횟수·점수·단추)은 낱말 가운데서 끊지 않는다: app.css의 overflow-wrap: anywhere가 표 칸을 글자 하나 폭까지
+   줄여 「번/호」처럼 끊는다. 긴 글 칸(지금 단원·실수)은 줄을 바꾼다(태블릿 폭은 아래 760~1099px 묶음). */
+.t-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .9375em; }
+.t-table th, .t-table td { text-align: left; vertical-align: top; padding: 12px 10px; overflow-wrap: normal; word-break: keep-all; }
+.t-table :is(th, td):first-child { padding-left: 20px; }
+.t-table :is(th, td):last-child { padding-right: 20px; }
+.t-table .c-here, .t-table .c-mistakes { overflow-wrap: anywhere; }
+.t-table :is(.c-num, .c-recent, .c-visits, .c-score) { white-space: nowrap; }
+.t-table thead th {
+  position: sticky; top: 0; z-index: 2; padding-top: 11px; padding-bottom: 11px; white-space: nowrap; font-weight: 600; font-size: .8125em;
+  color: var(--c-text-2); background: var(--c-surface-2); border-bottom: 1px solid var(--c-border); vertical-align: bottom;
+}
+.t-table tbody > tr > * { border-bottom: 1px solid var(--c-border); }
+.t-table tbody > tr:last-child > * { border-bottom: 0; }
+.t-table tbody tr:hover > * { background: var(--c-surface-2); }
+.t-table tbody th.c-num { font-weight: 650; color: var(--c-text); font-variant-numeric: tabular-nums; }
+.t-table :is(.c-mastered, .c-visits, .c-score) { text-align: right; font-variant-numeric: tabular-nums; }
+.t-table .c-recent { color: var(--c-text-2); font-variant-numeric: tabular-nums; }
+.t-table .c-score { font-weight: 650; }
+.c-name { width: 7em; }
+.c-seat { width: 1%; }
+.t-table thead th.c-seat { text-align: right; }
+.c-visits small { color: var(--c-text-2); font-size: .875em; }
+.t-name {
+  width: 100%; min-width: 4.5em; min-height: 32px; padding: .2em .65em; border-radius: 10px; border: 1px solid transparent;
+  background: var(--c-surface-2); font-size: .9375em;
+}
+.t-name:hover { border-color: var(--c-border-2); }
+.t-unit { display: block; font-weight: 600; }
+.t-step { display: block; color: var(--c-text-2); font-size: .875em; }
+.t-mistake-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.t-seat { display: flex; flex-wrap: nowrap; align-items: center; justify-content: flex-end; gap: 6px; }
+.t-seat-btn { min-height: 32px; padding: 0 .9em; border-radius: 999px; font-size: .8125em; white-space: nowrap; }
+.t-absent > * { padding-top: 6px; padding-bottom: 6px; vertical-align: middle; }
+.t-absent .c-num, .t-absent .c-absent { color: var(--c-text-2); }
+.t-absent th.c-num { font-weight: 500; }
+.t-absent .c-absent { font-size: .875em; }
+.t-absent .t-name { background: transparent; min-height: 28px; }
+/* 안 들어온 줄의 빈 이름 칸은 올리거나 누를 때만 「이름」이 보인다: 빈 줄마다 「이름」이 늘어서 아이 이름처럼 읽혔다(2026-10-25) */
+.t-absent .t-name:not(:hover):not(:focus)::placeholder { color: transparent; }
+.t-empty-row td { padding: 32px 20px; text-align: center; color: var(--c-text-2); }
+.t-sort {
+  border: 0; background: none; min-height: 0; padding: .1em .25em; margin: 0 -.25em; border-radius: 6px; color: inherit; font: inherit;
+  text-align: inherit; text-decoration: underline dotted; text-decoration-color: var(--c-border-2); text-underline-offset: 3px;
+}
+.t-sort[aria-pressed="true"] { color: var(--c-text); text-decoration: none; }
+.t-sort[aria-pressed="true"]::after { content: ' ↓'; }
+th[aria-sort="ascending"] .t-sort[aria-pressed="true"]::after { content: ' ↑'; }
+
+/* 1100px부터: 짧은 칸(번호·익힌 단원·날짜·횟수·점수)은 글 폭만 갖고, 남는 폭은 긴 글 칸(지금 단원·실수)이 다 갖는다.
+   짧은 칸에 폭을 정하지 않으면 남는 폭이 모든 칸에 퍼져 날짜·횟수 칸까지 빈 띠가 됐다(2026-10-25 Matto 「남는 공간이 왤케 많냐」).
+   실수 셋은 위아래로 쌓지 않고 한 줄 칩으로: 줄 높이가 낮아져 한 화면에 아이가 더 많이 보인다.
+   지금 단원은 단원 이름과 단계가 한 줄에 들어가면 한 줄, 안 들어가면 단계를 다음 줄로(flex-wrap). 이 칸 폭은 % 그대로 두고
+   나머지는 실수 칸이 갖는다: 둘 다 글 폭에 맡기면 들어온 아이가 적은 반(실수 「없어요」)에서 남는 폭이 모두 지금 단원 칸으로 간다 */
+@media (min-width: 1100px) {
+  .t-table thead th.c-here { width: 24%; }
+  .t-table thead th:is(.c-num, .c-mastered, .c-recent, .c-visits, .c-score) { width: 1%; }
+  .t-table :is(th, td):is(.c-mastered, .c-recent, .c-visits, .c-score) { padding-left: 16px; padding-right: 16px; }
+  .t-table .c-here .t-val { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; }
+  .t-table .t-mistake-list { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+  .t-table .t-mistake-list li { padding: .1em .65em; border: 1px solid var(--c-border); border-radius: 999px; font-size: .875em; line-height: 1.5; }
+}
+.t-seat .t-tag { flex: none; white-space: nowrap; }
+.t-here-mastered { display: none; margin-top: 3px; color: var(--c-text-2); font-size: .8125em; }
+/* 760~1099px(태블릿): 칸 사이를 좁히고 칸 폭을 정해 표가 꺾이지 않게. 단원 이름과 단계 이름은 두 줄까지 접어 다 보이고,
+   실수 이름도 접어 다 보인다. 대신 익힌 단원 칸은 접어 지금 단원 칸 안 「익힌 단원 4개」로, 접속 날 수는 「14일」만(횟수는 title·
+   화면 읽개), 꼬리표 「새 그림을 기다려요」는 [관리] 옆 한 줄. 줄은 조금 높아져도 표 안에서 내려간다(2026-10-22 3차) */
+@media (min-width: 760px) and (max-width: 1099px) {
+  .t-table { font-size: .875em; table-layout: fixed; }
+  .t-table th, .t-table td { padding-left: 6px; padding-right: 6px; }
+  /* 칸 폭은 px로(표 머리 글씨가 작아 em이면 「번호」 칸이 글자 하나 폭이 된다) */
+  .t-table :is(th, td):first-child { padding-left: 14px; }
+  .t-table :is(th, td):last-child { padding-right: 14px; }
+  .t-table thead th.c-num { width: 44px; }
+  .t-table thead th.c-name { width: 72px; }
+  .t-table thead th.c-mistakes { width: 16%; }
+  .t-table thead th.c-recent { width: 74px; }
+  .t-table thead th.c-visits { width: 64px; }
+  .t-table thead th.c-score { width: 44px; }
+  .t-table thead th.c-seat { width: 178px; }
+  /* 익힌 단원 칸은 빼지(display: none) 않고 폭 0으로 접는다: 안 들어온 아이 줄의 colspan이 이 칸까지 세어서, 칸을 빼면
+     빈 칸 하나가 생겨 남은 폭을 지금 단원 칸과 반씩 나눠 가진다. 화면 읽개는 이 칸을 그대로 읽고, 「익힌 단원 N개」는 눈으로만 */
+  .t-table thead th.c-mastered { width: 0; }
+  .t-table .c-mastered { padding: 0; font-size: 0; line-height: 0; overflow: hidden; color: transparent; }
+  .t-here-mastered { display: block; }
+  .t-seat .t-tag { padding-inline: .5em; }
+  .t-table thead th:is(.c-recent, .c-visits) { white-space: normal; }
+  .t-table .t-unit { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+  .t-table .t-step { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+  .t-table .c-visits .t-visit-count { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+
+/* ── 쪽을 바꿀 때(.t-enter): 칸 자리에 회색 뼈대가 먼저 뜨고(0.25초 안쪽) 칸이 차례로, 제목은 흐림에서 또렷하게(사례 02·03) ── */
+.t-card-x { position: relative; }
+.t-enter .t-card-x { animation: t-rise .32s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.t-enter .t-card-x::after {
+  content: ''; position: absolute; inset: -1px; z-index: 5; border-radius: inherit; background: var(--c-skeleton); pointer-events: none;
+  animation: t-skeleton .24s ease-out both; animation-delay: calc(var(--i, 0) * 40ms);
+}
+.t-enter .t-page-title { animation: t-unblur .36s ease-out both; }
+.t-enter .t-page-lead { animation: t-unblur .36s ease-out .05s both; }
+@keyframes t-rise { from { transform: translateY(6px); } to { transform: none; } }
+@keyframes t-skeleton { 0%, 45% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes t-unblur { from { filter: blur(8px); opacity: .35; } to { filter: none; opacity: 1; } }
+
+/* 쪽 몸통이 좁으면(태블릿 세로 810 등) 숫자 칸 둘씩은 아니고 넷 그대로, 한눈에 보기 두 칸은 1:1 */
+@container (max-width: 820px) {
+  .t-duo-overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .t-stat { min-height: 120px; padding: 16px 16px 14px; }
+  .t-stat-label { padding-right: 36px; }
+}
+
+/* ── 폰(760px 아래): 위아래로 쌓고 쪽을 내려 본다. 쪽 탭은 가로로 밀어 넘긴다. 표 줄은 아이마다 카드. 누르는 것은 44px ── */
+@media (max-width: 759px) {
+  .t-head { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "brand pick" "me me" "tabs tabs"; }
+  .t-pages { justify-self: stretch; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .t-pages::-webkit-scrollbar { display: none; }
+  .t-page-tab { min-height: 44px; flex: none; padding: 0 16px; }
+  .t-head > .s-top-end { justify-self: stretch; }
+  .t-account { flex: 1 1 auto; max-width: none; }
+  .t-pick-btn { min-height: 44px; }
+  .t-pick-list { right: 0; min-width: min(280px, calc(100vw - 32px)); }
+  #teacher { padding: 8px var(--s-pad) 24px; }
+  .t-page-head, .t-board-head { align-items: flex-start; }
+  .t-page-tools { justify-items: start; }
+  .t-pills { justify-content: flex-start; }
+  .t-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .t-stat { min-height: 116px; padding: 14px 14px 12px; }
+  .t-stat-label { padding-right: 34px; }
+  .t-stat::before { top: 10px; right: 10px; width: 30px; height: 30px; }
+  .t-stat::after { top: 17px; right: 17px; width: 15px; height: 15px; }
+  .t-duo, .t-duo-overview { grid-template-columns: minmax(0, 1fr); }
+  .t-chart { min-height: 240px; }
+  .t-set-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .t-set-action { grid-column: 2; justify-content: flex-start; }
+  .t-search-box { flex: 1 1 100%; min-width: 0; }
+  .t-table-wrap { overflow: visible; border-top: 0; }
+  .t-table, .t-table thead, .t-table tbody, .t-table tr, .t-table th, .t-table td { display: block; }
+  .t-table thead tr { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 0 16px 12px; }
+  .t-table thead tr::before { content: '줄 세우기'; color: var(--c-text-2); font-size: .875em; margin-right: 4px; }
+  .t-table thead th { display: none; position: static; background: none; }
+  .t-table thead th.sortable { display: block; padding: 0; border: 0; }
+  .t-sort { margin: 0; padding: .3em .9em; border: 1px solid var(--c-border-2); border-radius: 999px; background: var(--c-surface); text-decoration: none; }
+  .t-sort[aria-pressed="true"] { background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); }
+  .t-table tbody { display: grid; gap: 10px; padding: 0 12px 12px; }
+  .t-table tbody tr {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+    background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 16px; padding: 12px 14px;
+  }
+  .t-table tbody tr > th.c-num { flex: 0 0 2em; }
+  .t-table tbody tr > td.c-name { flex: 1 1 0; min-width: 0; }
+  .t-table tbody tr:hover > * { background: none; }
+  .t-table tbody > tr > * { border: 0; padding: 0; }
+  .t-table tbody > tr > :is(th, td):first-child, .t-table tbody > tr > :is(th, td):last-child { padding: 0; }
+  .t-table tbody th.c-num { font-size: 1.125em; }
+  .c-name { width: auto; }
+  .t-table td[data-label] { flex: 1 1 100%; display: grid; grid-template-columns: 6.6em minmax(0, 1fr); gap: 8px; text-align: left; white-space: normal; }
+  .t-table td:is(.c-mastered, .c-recent, .c-visits, .c-score)[data-label] { flex: 1 1 calc(50% - 6px); grid-template-columns: 5.2em minmax(0, 1fr); }
+  .t-table td[data-label]::before { content: attr(data-label); color: var(--c-text-2); font-size: .875em; }
+  /* 긴 글 칸(지금 단원·실수)을 먼저 한 줄씩, 짧은 칸 넷은 둘씩 두 줄, 자리는 맨 끝 */
+  .t-table td.c-here { order: 1; }
+  .t-table td.c-mistakes { order: 2; }
+  .t-table td:is(.c-mastered, .c-recent, .c-visits, .c-score) { order: 3; }
+  .t-table td.c-seat { order: 4; }
+  .t-seat { justify-content: flex-start; flex-wrap: wrap; }
+  /* 안 들어온 번호는 한 줄: 번호 · 이름 칸 · 「아직 안 들어왔어요」 */
+  .t-table tbody tr.t-absent { flex-wrap: nowrap; padding: 8px 14px; background: var(--c-surface-2); }
+  .t-table tbody tr.t-absent > td.c-absent { flex: none; }
+  .t-table .c-absent { white-space: nowrap; }
+  .t-table tbody tr.t-empty-row { display: block; }
+  /* 누르는 단추는 모두 44px 이상: 작게 둔 단추(알약·탭·자리 관리·복사·줄 세우기·모두 보기)도 */
+  .t-seat-btn, .t-copy, .t-pill, .t-tab, .t-sort, .t-more, .t-tile, .t-name { min-height: 44px; }
+}
+
+/* 아이 리포트를 여는 링크(board.js kidLink): 글은 그대로(밑줄 없이), 올리면 밑줄. 들어온 줄·칸은 빈 곳을 눌러도 연다 */
+.t-open-kid { color: inherit; text-decoration: none; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.t-open-kid:hover { text-decoration: underline; text-decoration-color: var(--c-border-2); }
+.t-num-link { display: inline-block; min-width: 1.6em; }
+:is(tr, li)[data-open-kid] { cursor: pointer; }
+.t-attn-list li[data-open-kid]:hover .t-attn-num, .t-rank-list li[data-open-kid]:hover .t-kid-num { text-decoration: underline; text-decoration-color: var(--c-border-2); text-underline-offset: 3px; }
+a.t-num-chip { color: var(--c-text-2); }
+a.t-num-chip:hover { background: var(--c-hover); color: var(--c-text); text-decoration: none; }
+
+/* 확인 시트(sheet.js, 바탕은 staff.css): 넓으면 가운데 창 */
+.t-sheet-text { line-height: 1.6; }
+.t-sheet-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.t-sheet-actions button { flex: 1 1 8em; min-height: 44px; }
+/* 로그아웃 시트(결정 4): 긴 두 단추는 한 줄에 둘, [취소]는 다음 줄(셋이 한 줄이면 넓은 창에서 단추 글이 두 줄로 갈린다) */
+.t-logout-sheet .t-sheet-actions button { flex-basis: 10em; }
+/* 자리 시트([관리]): 할 일 둘을 위아래로, 단추 아래에 언제 쓰는지 한 줄 */
+.t-choices { display: grid; gap: 14px; }
+.t-choice { display: grid; gap: 4px; }
+.t-choice-btn { min-height: 44px; text-align: left; border-radius: 14px; }
+.t-choice-when { color: var(--c-text-2); font-size: .875em; line-height: 1.5; }
+@media (min-width: 700px) {
+  .sheet.t-sheet { width: min(500px, 92vw); }
+}
+
+/* ── 아이 상세 리포트(모달, 2026-10-23, report.js) ──
+   노트북·가로 태블릿(900px부터): 화면 대부분을 덮는 큰 창(둘레 여백, 둥근 모서리, 쪽 바탕 색). 탭마다 창 안에서 내리지 않는다(한 화면).
+   태블릿 세로(600~899px)·폰은 화면 가득. 폰(600px 아래)만 창 안에서 내려 본다. 시트(z 100)는 이 창(z 90) 위에 뜬다.
+   선은 가늘게(1px). 리포트 안 비율·진도는 단계 색(2026-10-24), 학습 달력은 살구색 짙기 그대로 */
+html.t-report-open, html.t-report-open body { overflow: hidden; }
+.t-report-backdrop {
+  position: fixed; inset: 0; z-index: 90; display: flex; align-items: stretch; justify-content: center;
+  padding: clamp(14px, 3.4vh, 34px) clamp(16px, 3vw, 48px); background: var(--c-scrim); overscroll-behavior: contain;
+}
+.t-report {
+  display: flex; flex-direction: column; width: min(1320px, 100%); min-height: 0; overflow: hidden;
+  background: var(--c-bg); border: 1px solid var(--c-border); border-radius: 26px; box-shadow: var(--c-pop);
+}
+.t-rp-head {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "who facts nav close";
+  align-items: center; gap: 8px 22px; padding: 14px 14px 10px 26px;
+}
+.t-rp-who { grid-area: who; display: flex; align-items: center; gap: 12px; min-width: 0; }
+.t-rp-name { margin: 0; display: flex; align-items: baseline; gap: 10px; font-size: 1.625em; font-weight: 650; letter-spacing: -.035em; line-height: 1.2; white-space: nowrap; }
+.t-rp-name:focus { outline: none; }
+.t-rp-num { font-variant-numeric: tabular-nums; }
+.t-rp-kid { max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
+.t-rp-why {
+  display: inline-flex; align-items: center; gap: 5px; padding: .15em .7em .15em .55em; border-radius: 999px; font-size: .75rem; font-weight: 600; line-height: 1.55;
+  white-space: nowrap; background: var(--c-surface-2); color: var(--c-text-2); border: 1px solid var(--c-border);
+}
+.t-rp-why::before { content: ''; flex: none; width: 12px; height: 12px; background: currentColor; -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+.t-rp-why[data-reason="locked"] { --ico: var(--i-lock); }
+.t-rp-why[data-reason="reset"] { --ico: var(--i-picture); }
+.t-rp-why[data-reason="away"] { --ico: var(--i-clock); }
+.t-rp-why[data-reason="low"] { --ico: var(--i-down); }
+.t-rp-why[data-reason="locked"] { background: var(--c-bad-soft); color: var(--c-bad-ink); border-color: var(--c-bad-line); }
+.t-rp-why[data-reason="reset"] { background: var(--c-good-soft); color: var(--c-good-ink); border-color: var(--c-good-line); }
+.t-rp-facts { grid-area: facts; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 18px; margin: 0; min-width: 0; }
+.t-rp-facts div { display: flex; align-items: baseline; gap: 6px; }
+.t-rp-facts dt { color: var(--c-text-2); font-size: .8125em; }
+.t-rp-facts dd { margin: 0; font-size: .9375em; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.t-rp-nav { grid-area: nav; display: flex; gap: 6px; }
+.t-rp-step { min-height: 40px; padding: 0 14px; background: var(--c-surface); border-color: var(--c-border); font-size: .875em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.t-rp-step:disabled { color: var(--c-text-2); background: transparent; border-style: dashed; }
+.t-rp-close {
+  grid-area: close; display: grid; place-items: center; width: 44px; height: 44px; min-height: 44px; padding: 0; border-radius: 50%;
+  background: var(--c-surface); border-color: var(--c-border);
+}
+.t-rp-close::before {
+  content: ''; width: 18px; height: 18px; background: var(--c-text);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.t-rp-tabs {
+  display: flex; gap: 2px; align-self: flex-start; margin: 0 26px 2px; padding: 4px; border-radius: 999px;
+  background: var(--c-surface-2); border: 1px solid var(--c-border);
+}
+.t-rp-tab { min-height: 36px; padding: 0 20px; border: 0; border-radius: 999px; background: transparent; color: var(--c-text-2); font-size: .875em; font-weight: 600; }
+.t-rp-tab:not([aria-selected="true"]):hover { background: var(--c-hover); color: var(--c-text); }
+.t-rp-tab[aria-selected="true"] { background: var(--c-accent); color: var(--c-on-accent); }
+.t-rp-body { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 12px 26px 22px; }
+.t-rp-body:focus-visible { outline: 2px solid var(--c-accent-ink); outline-offset: -4px; border-radius: 0 0 26px 26px; }
+
+/* 칸(미색 둥근 칸)과 칸 안 글 */
+.t-rp-grid { display: grid; gap: 12px; min-height: 100%; align-content: stretch; }
+.t-rp-card { display: flex; flex-direction: column; gap: 10px; min-width: 0; min-height: 0; padding: 16px 18px; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 18px; box-shadow: var(--c-shadow); }
+.t-rp-title { margin: 0; font-size: 1em; font-weight: 650; letter-spacing: -.02em; }
+.t-rp-hint { margin: -6px 0 0; color: var(--c-text-2); font-size: .8125em; line-height: 1.45; }
+.t-rp-few { margin: auto 0; padding: 10px 0; text-align: center; font-size: .9375em; }
+.t-rp-tag {
+  display: inline-flex; align-items: center; justify-self: end; padding: .1em .6em; border-radius: 999px; border: 1px solid var(--c-border);
+  font-size: .75rem; font-weight: 600; line-height: 1.5; white-space: nowrap; background: var(--c-surface-2); color: var(--c-text-2);
+}
+.t-rp-tag:is(.done, .reached) { background: var(--c-good-soft); color: var(--c-good-ink); border-color: var(--c-good-line); }
+.t-rp-tag.doing { background: var(--c-accent-soft); color: var(--c-accent-ink); border-color: var(--c-border-2); }
+.t-rp-tag.todo { background: transparent; }
+.t-rp-tag.stuck { background: transparent; color: var(--c-text); border-color: var(--c-border-2); }
+[data-first="true"] .t-rp-tag.stuck { background: var(--c-rate-bg); color: var(--c-rate-ink); border-color: var(--c-rate-line); } /* 살구색은 아직 막힌 첫 단계 하나만 */
+.t-rp-more { align-self: flex-start; min-height: 32px; padding: 0 12px; font-size: .8125em; margin-top: auto; }
+.t-rp-problem { display: grid; justify-items: start; gap: 12px; max-width: 520px; margin: 40px auto; }
+/* 받는 동안 뼈대 */
+.t-rp-bones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-height: 100%; }
+.t-rp-bone { justify-content: flex-start; min-height: 160px; }
+.t-rp-bone-line { display: block; height: 14px; width: 60%; border-radius: 8px; background: var(--c-skeleton); }
+.t-rp-bone-line.short { width: 35%; }
+
+/* 요약: ① 지금 하는 곳 · ⑤ 갈래별(왼쪽) / ⑫ 공부한 양 · ④ 맞힌 비율 · ⑦ 실수 셋(가운데) / ⑯ 지도 제안 · ⑭ 최근 활동(오른쪽, .t-rp-side).
+   오른쪽 묶음은 넓은 화면에서만 한 줄로 서고(900px부터), 그 아래 폭에서는 없는 것처럼 칸마다 자리를 잡는다 */
+.t-rp-side { display: contents; }
+.t-rp-big { margin: 0; font-size: 1.5em; font-weight: 650; letter-spacing: -.03em; line-height: 1.25; overflow-wrap: anywhere; }
+.t-rp-sub { margin: -4px 0 0; color: var(--c-text); font-weight: 600; }
+.t-rp-note { margin: auto 0 0; color: var(--c-text-2); font-size: .8125em; }
+.t-rp-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: auto 0; }
+.t-rp-stat { display: grid; gap: 2px; min-width: 0; align-content: start; }
+.t-rp-stat dt { color: var(--c-text-2); font-size: .8125em; }
+.t-rp-stat dd { margin: 0; display: grid; gap: 2px; }
+.t-rp-stat-num { font-size: 1.5em; font-weight: 650; letter-spacing: -.03em; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t-rp-stat-note { color: var(--c-text-2); font-size: .8125em; }
+/* ④ 요약의 맞힌 비율: 이번 주·지난 주 한 줄과 주마다 작은 막대. 넓은 화면에서 남는 높이는 이 칸 그림이 갖는다(아래 짜임) */
+.t-rp-acc-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; }
+.t-rp-acc-nums { margin: 0; color: var(--c-text-2); font-size: .875em; font-variant-numeric: tabular-nums; }
+.t-rp-acc-nums b { color: var(--c-text); font-size: 1.125rem; font-weight: 650; letter-spacing: -.02em; }
+.t-rp-acc .t-rp-plot { height: 130px; }
+.t-rp-guide-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+/* 줄마다 둥근 그림(::before 동그라미 + ::after 그림, 대시보드 살펴볼 아이와 같은 그림) */
+.t-rp-guide-list li { position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; line-height: 1.55; }
+.t-rp-guide-list li::before { content: ''; width: 30px; height: 30px; box-sizing: border-box; border-radius: 50%; background: var(--c-surface-2); border: 1px solid var(--c-border); }
+.t-rp-guide-list li::after {
+  content: ''; position: absolute; left: 7px; top: 7px; width: 16px; height: 16px; background: var(--c-text-2);
+  -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat;
+}
+.t-rp-guide-list [data-kind="away"] { --ico: var(--i-clock); }
+.t-rp-guide-list [data-kind="stuck"] { --ico: var(--i-flag); }
+.t-rp-guide-list [data-kind="shaky"] { --ico: var(--i-alert); }
+.t-rp-guide-list [data-kind="low"] { --ico: var(--i-down); }
+.t-rp-guide-list [data-kind="drill"] { --ico: var(--i-target); }
+.t-rp-guide-none { margin: 0; color: var(--c-text-2); line-height: 1.55; }
+.t-rp-seat-box { margin-top: auto; display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--c-border); }
+.t-rp-seat-label { margin: 0; color: var(--c-text-2); font-size: .8125em; font-weight: 600; }
+.t-rp-seat-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.t-rp-seat { min-height: 38px; padding: 0 14px; font-size: .8125em; background: var(--c-surface); }
+/* ⑤ 갈래마다 한 줄: 이름 · 가로 막대(이 아이, 세로 줄은 반 평균) · 맞힌 비율 · 반 */
+.t-rp-key-avg { display: inline-block; width: 2px; height: 12px; margin-right: 6px; vertical-align: -1px; background: var(--c-text); border-radius: 1px; }
+.t-rp-strand-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.t-rp-strands .t-rp-strand-list { flex: 1 1 auto; align-content: space-evenly; } /* 칸이 높으면 줄 사이를 고르게 */
+.t-rp-strand-list li { display: grid; grid-template-columns: 4.6em minmax(0, 1fr) 6.4em 4.4em; align-items: center; gap: 10px; }
+.t-rp-strand { font-weight: 600; font-size: .875em; white-space: nowrap; }
+.t-rp-hbar { position: relative; display: block; height: 10px; border-radius: 999px; background: var(--c-bar-track); }
+.t-rp-hfill { display: block; height: 100%; width: calc(var(--rate, 0) * 100%); min-width: 4px; border-radius: inherit; background: var(--c-bar); }
+[data-empty="true"] .t-rp-hfill { display: none; }
+[data-low="true"] .t-rp-hfill { background: var(--c-orange); }
+[data-low="true"] .t-rp-rate { color: var(--c-orange-ink); }
+.t-rp-avg { position: absolute; top: -4px; bottom: -4px; left: calc(var(--at, 0) * 100%); width: 2px; margin-left: -1px; border-radius: 1px; background: var(--c-text); }
+.t-rp-rate { font-size: .8125em; font-weight: 650; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+[data-empty="true"] .t-rp-rate { color: var(--c-text-2); font-weight: 500; }
+.t-rp-class { color: var(--c-text-2); font-size: .75em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* ⑦ 실수 목록: 이름 · 횟수 · 아래 가는 막대(가장 많은 것을 끝까지로) */
+.t-rp-mistake-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.t-rp-mistake-list li { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr) auto; align-items: baseline; gap: 4px 10px; }
+.t-rp-mistake { min-width: 0; font-weight: 600; font-size: .9375em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-rp-from { min-width: 0; color: var(--c-text-2); font-size: .75em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-rp-count { color: var(--c-text-2); font-size: .8125em; font-weight: 600; font-variant-numeric: tabular-nums; }
+.t-rp-line { grid-column: 1 / -1; display: block; height: 6px; border-radius: 999px; background: var(--c-bar-track); overflow: hidden; }
+.t-rp-line-fill { display: block; height: 100%; width: max(6px, calc(var(--share, 0) * 100%)); border-radius: inherit; background: var(--c-line); }
+
+/* 진도: ② 학기마다 단원 줄(이름 · 넘긴 단계 막대 · 꼬리표) · ③ 영역마다 성취기준 줄(꼬리표 · 코드 · 글 끝까지, 한 단) */
+.t-rp-sems { display: grid; gap: 8px; }
+.t-rp-sem h4, .t-rp-std-group h4 { margin: 0 0 2px; color: var(--c-text-2); font-size: .75em; font-weight: 650; }
+.t-rp-unit-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.t-rp-unit-list li { display: grid; grid-template-columns: minmax(0, 1fr) 64px 8.4em; align-items: center; gap: 10px; padding: 4px 0; border-top: 1px solid var(--c-border); }
+.t-rp-unit-list li:first-child { border-top: 0; }
+.t-rp-unit { min-width: 0; font-size: .875em; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+[data-status="todo"] > .t-rp-unit { color: var(--c-text-2); font-weight: 500; }
+.t-rp-now { margin-left: 6px; padding: 0 .45em; border-radius: 999px; background: var(--c-accent); color: var(--c-on-accent); font-size: .6875rem; font-weight: 700; vertical-align: .1em; }
+.t-rp-steps { display: block; height: 6px; border-radius: 999px; background: var(--c-bar-track); overflow: hidden; }
+.t-rp-steps-fill { display: block; height: 100%; width: calc(var(--share, 0) * 100%); border-radius: inherit; background: var(--c-line); }
+[data-status="mastered"] .t-rp-steps-fill { background: var(--c-good-ink); opacity: .55; }
+.t-rp-std-groups { display: grid; gap: 8px; align-content: start; }
+.t-rp-std-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.t-rp-std-list li { display: grid; grid-template-columns: 4.4em 5.4em minmax(0, 1fr); align-items: baseline; gap: 8px; padding: 3px 0; font-size: .8125em; }
+.t-rp-std-list .t-rp-tag { justify-self: start; }
+.t-rp-code { color: var(--c-text-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t-rp-std { min-width: 0; line-height: 1.45; }
+/* 노트북·태블릿: 진도 탭은 창 높이 그대로, 칸에 다 안 들어가는 성취기준 목록만 칸 안에서 내린다(아이별 표처럼).
+   위·아래에 더 있으면 그쪽 끝에 옅은 그림자: 목록과 같이 움직이는 바탕색 덮개(local)가 끝에 닿으면 그림자(scroll)를 가린다 */
+@media (min-width: 600px) {
+  .t-rp-progress { height: 100%; grid-template-rows: minmax(0, 1fr); }
+  .t-rp-std-groups {
+    --std-shade: color-mix(in srgb, var(--c-scrim) 55%, transparent);
+    flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin-right: -8px; padding-right: 8px;
+    background:
+      linear-gradient(var(--c-surface) 35%, transparent) top / 100% 28px no-repeat local,
+      linear-gradient(transparent, var(--c-surface) 65%) bottom / 100% 28px no-repeat local,
+      radial-gradient(farthest-side at 50% 0, var(--std-shade), transparent) top / 100% 12px no-repeat scroll,
+      radial-gradient(farthest-side at 50% 100%, var(--std-shade), transparent) bottom / 100% 12px no-repeat scroll;
+  }
+  html[data-theme="dark"] .t-rp-std-groups { --std-shade: var(--c-scrim); } /* 어두운 판은 옅은 그림자가 바탕에 묻혀 진하게 */
+  .t-rp-std-groups:focus-visible { outline: 2px solid var(--c-accent-ink); outline-offset: 2px; border-radius: 8px; }
+}
+[data-status="todo"] > .t-rp-std { color: var(--c-text-2); }
+
+/* 실수: ⑦ 열 개(왼쪽) · ⑧ 막힌 단계와 ⑨ 흔들리는 기초(오른쪽 위아래) */
+.t-rp-col { display: grid; gap: 12px; grid-template-rows: auto auto; align-content: stretch; min-height: 0; }
+.t-rp-stuck-list, .t-rp-shaky-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.t-rp-stuck-list li, .t-rp-shaky-list li {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name tag" "meta tag"; align-items: center; gap: 2px 12px;
+  padding: 8px 0; border-top: 1px solid var(--c-border);
+}
+.t-rp-stuck-list li:first-child, .t-rp-shaky-list li:first-child { border-top: 0; padding-top: 2px; }
+.t-rp-stuck-name, .t-rp-shaky-name { grid-area: name; min-width: 0; font-weight: 600; font-size: .9375em; }
+.t-rp-stuck-name small { margin-left: 8px; color: var(--c-text-2); font-size: .875em; font-weight: 500; }
+.t-rp-stuck-meta { grid-area: meta; color: var(--c-text-2); font-size: .8125em; font-variant-numeric: tabular-nums; }
+:is(.t-rp-stuck-list, .t-rp-shaky-list) .t-rp-tag { grid-area: tag; }
+[data-now="passed"] .t-rp-stuck-name { color: var(--c-text-2); }
+
+/* 기록: ④ 맞힌 비율(판마다 선 · 주마다 막대, 왼쪽) · ⑪ 학습 달력 · ⑭ 최근 활동(오른쪽 위아래) */
+/* 그래프: 칸(.t-rp-plot)의 크기를 report.js가 재서 svg를 그 크기 그대로 겹쳐 그린다. 가는 선(2px) · 옅은 눈금 · 막대는 위만 둥글게 */
+.t-rp-charts { display: grid; gap: 14px; }
+.t-rp-chart { margin: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 6px; min-width: 0; min-height: 0; }
+.t-rp-chart figcaption { color: var(--c-text-2); font-size: .8125em; font-weight: 600; }
+.t-rp-plot { position: relative; height: 150px; min-width: 0; }
+.t-rp-plot > .t-rp-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; } /* 창을 줄이는 순간 옛 크기 그림이 창 안을 넘치게 하지 않는다(총검수 B-3) */
+.t-rp-svg text { fill: var(--c-text-2); font-size: 11px; font-family: var(--s-font); font-variant-numeric: tabular-nums; }
+.t-rp-svg .grid line { stroke: var(--c-border); stroke-width: 1; shape-rendering: crispEdges; }
+.t-rp-svg .pass line { stroke: var(--c-border-2); stroke-width: 1; stroke-dasharray: 4 4; shape-rendering: crispEdges; }
+.t-rp-svg .base { stroke: var(--c-border-2); stroke-width: 1; shape-rendering: crispEdges; }
+.t-rp-svg .trend { fill: none; stroke: var(--c-accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.t-rp-svg .dot { fill: var(--c-accent); stroke: var(--c-surface); stroke-width: 2; }
+.t-rp-svg .hit { fill: var(--c-accent); fill-opacity: 0; }
+.t-rp-svg .hit:hover { fill-opacity: .16; }
+.t-rp-svg .bar { fill: var(--c-bar); }
+.t-rp-svg .week.last .bar { fill: var(--c-accent); }
+.t-rp-svg .week .bar:hover { fill: var(--c-text-2); }
+.t-rp-svg .val { fill: var(--c-text); font-weight: 650; }
+
+/* 뜻 있는 색은 리포트 창 안에서만 쓴다. 홈의 숨은 data-level 표시에는 걸리지 않는다. */
+.t-report [data-level="good"] {
+  --rp-level-bar: var(--c-level-good); --rp-level-soft: var(--c-good-soft); --rp-level-ink: var(--c-good-ink);
+}
+.t-report [data-level="warn"] {
+  --rp-level-bar: var(--c-level-warn); --rp-level-soft: var(--c-warn-soft); --rp-level-ink: var(--c-warn-ink);
+}
+.t-report [data-level="bad"] {
+  --rp-level-bar: var(--c-level-bad); --rp-level-soft: var(--c-bad-soft); --rp-level-ink: var(--c-bad-ink);
+}
+.t-report .t-rp-strand-list [data-level] .t-rp-hfill { background: var(--rp-level-bar); }
+.t-report .t-rp-strand-list [data-level] .t-rp-rate { color: var(--c-text); }
+.t-report .t-rp-svg .week[data-level] .bar { fill: var(--rp-level-bar); }
+.t-report .t-rp-svg .t-colors-week-value { fill: var(--c-text); font-size: 10px; font-weight: 600; }
+.t-report .t-rp-svg .week[data-current="true"] .bar {
+  stroke: var(--c-text); stroke-width: 2; paint-order: stroke fill;
+}
+.t-report .t-rp-why[data-level] {
+  color: var(--rp-level-ink); background: var(--rp-level-soft); border-color: var(--rp-level-soft);
+}
+.t-report .t-rp-progress .t-rp-tag.doing {
+  color: var(--c-warn-ink); background: var(--c-warn-soft); border-color: var(--c-warn-soft);
+}
+.t-report .t-rp-unit-list [data-status="doing"] .t-rp-steps-fill { background: var(--c-level-warn); }
+.t-report .t-rp-unit-list [data-status="mastered"] .t-rp-steps-fill { background: var(--c-level-good); opacity: 1; }
+.t-report .t-rp-color-key { display: flex; align-items: center; gap: 10px; margin-top: 4px; line-height: 16px; white-space: nowrap; }
+.t-report .t-rp-trend > .t-rp-hint { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.t-report .t-rp-trend .t-rp-color-key { margin-top: 0; }
+.t-report .t-colors-key { display: inline-flex; align-items: center; gap: 4px; }
+.t-report .t-colors-key::before {
+  content: ''; width: 8px; height: 8px; border-radius: 2px; background: var(--rp-level-bar);
+}
+.t-rp-cal-box { display: grid; gap: 6px; justify-content: start; margin: auto 0; }
+.t-rp-cal-months, .t-rp-cal { display: grid; grid-auto-flow: column; grid-auto-columns: var(--cal-cell, 13px); gap: var(--cal-gap, 3px); }
+.t-rp-cal-months { margin-left: calc(1.6em + 6px); height: 14px; font-size: .6875rem; color: var(--c-text-2); }
+.t-rp-cal-months span { white-space: nowrap; overflow: visible; line-height: 14px; }
+.t-rp-cal-row { display: flex; gap: 6px; }
+.t-rp-cal-days { display: grid; grid-template-rows: repeat(7, var(--cal-cell, 13px)); gap: var(--cal-gap, 3px); width: 1.6em; font-size: .625rem; color: var(--c-text-2); }
+.t-rp-cal-days span { line-height: var(--cal-cell, 13px); }
+.t-rp-cal-week { display: grid; grid-template-rows: repeat(7, var(--cal-cell, 13px)); gap: var(--cal-gap, 3px); }
+.t-rp-cal-day { display: block; width: var(--cal-cell, 13px); height: var(--cal-cell, 13px); border-radius: 3px; background: var(--c-bar-track); }
+.t-rp-cal-day[data-level="none"] { background: transparent; }
+.t-rp-cal-day[data-level="0"] { background: var(--c-bar-track); box-shadow: inset 0 0 0 1px var(--c-border); }
+.t-rp-cal-day[data-level="1"] { background: color-mix(in srgb, var(--c-orange) 28%, var(--c-surface)); }
+.t-rp-cal-day[data-level="2"] { background: color-mix(in srgb, var(--c-orange) 52%, var(--c-surface)); }
+.t-rp-cal-day[data-level="3"] { background: color-mix(in srgb, var(--c-orange) 78%, var(--c-surface)); }
+.t-rp-cal-day[data-level="4"] { background: var(--c-orange-2); }
+.t-rp-cal-legend { display: flex; align-items: center; gap: 4px; margin: 2px 0 0; color: var(--c-text-2); font-size: .6875rem; }
+.t-rp-cal-legend .t-rp-cal-day { width: 11px; height: 11px; }
+.t-rp-recent-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; }
+/* 줄 위아래 여백: 칸에 들어가는 줄만 남기고 남은 높이는 줄 사이가 나눠 갖는다(report.js fitRecent가 --recent-spread를 둔다) */
+.t-rp-recent-list li {
+  display: grid; grid-template-columns: 5.2em minmax(0, 1fr) auto; grid-template-areas: "day kind score" "day events events"; align-items: center;
+  gap: 2px 10px; padding: calc(6px + var(--recent-spread, 0px)) 0; border-top: 1px solid var(--c-border);
+}
+.t-rp-recent-list li:first-child { border-top: 0; padding-top: 0; }
+.t-rp-day { grid-area: day; align-self: start; color: var(--c-text-2); font-size: .8125em; font-variant-numeric: tabular-nums; white-space: nowrap; padding-top: 1px; }
+.t-rp-kind { grid-area: kind; min-width: 0; font-size: .875em; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-rp-score { grid-area: score; color: var(--c-text-2); font-size: .8125em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t-rp-events { grid-area: events; display: flex; flex-wrap: wrap; gap: 4px; }
+.t-rp-events .t-rp-tag { justify-self: start; }
+
+/* 900px부터(노트북·가로 태블릿): 탭마다 짜임 */
+@media (min-width: 900px) {
+  .t-rp-summary {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: "here week side" "strands acc side" "strands top3 side";
+  }
+  /* 판이 적어 맞힌 비율이 글 한 줄이면 작은 칸, 남는 높이는 실수 칸이 갖는다 */
+  .t-rp-summary[data-acc="few"] { grid-template-rows: auto auto minmax(0, 1fr); }
+  .t-rp-here { grid-area: here; } .t-rp-week { grid-area: week; }
+  .t-rp-strands { grid-area: strands; } .t-rp-top3 { grid-area: top3; } .t-rp-acc { grid-area: acc; }
+  .t-rp-acc .t-rp-plot { flex: 1 1 auto; height: auto; min-height: 80px; }
+  /* 오른쪽 줄: 지도 제안은 글 높이만(자리 단추는 그 칸 아래), 남는 높이는 최근 활동이 갖는다. 판이 없으면 최근 활동은 작은 칸이고 남는 높이는 지도 제안이 */
+  .t-rp-side { grid-area: side; display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; }
+  .t-rp-side > .t-rp-guide { flex: none; }
+  .t-rp-side > .t-rp-recent { flex: 1 1 auto; }
+  .t-rp-side[data-few] > .t-rp-guide { flex: 1 1 auto; }
+  .t-rp-side[data-few] > .t-rp-recent { flex: none; }
+  .t-rp-progress { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
+  .t-rp-mistakes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .t-rp-record { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); grid-template-areas: "trend calendar" "trend recent"; }
+  .t-rp-trend { grid-area: trend; } .t-rp-calendar { grid-area: calendar; } .t-rp-recent { grid-area: recent; }
+  .t-rp-trend .t-rp-charts { flex: 1 1 auto; min-height: 0; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+  .t-rp-trend .t-rp-plot { height: auto; min-height: 96px; }
+  .t-rp-calendar { --cal-cell: 14px; }
+}
+@media (min-width: 1200px) and (min-height: 740px) {
+  .t-rp-calendar { --cal-cell: 16px; --cal-gap: 4px; }
+}
+/* 900px 아래: 화면 가득. 600~899px(태블릿 세로)은 두 칸 짜임으로 한 화면에 */
+@media (max-width: 899px) {
+  .t-report-backdrop { padding: 0; }
+  .t-report { width: 100%; border: 0; border-radius: 0; }
+  .t-rp-head { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "who nav close" "facts facts facts"; padding: 12px 12px 8px 20px; }
+  .t-rp-tabs { margin-inline: 20px; }
+  .t-rp-body { padding: 10px 20px 18px; }
+  .t-rp-body:focus-visible { border-radius: 0; }
+}
+@media (min-width: 600px) and (max-width: 899px) {
+  /* 지금 곳 | 공부한 양 / 지도 제안 / 맞힌 비율 | 최근 활동(남는 높이) / 갈래별 | 자주 하는 실수 */
+  .t-rp-summary {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas: "here week" "guide guide" "acc recent" "strands top3";
+  }
+  .t-rp-summary[data-acc="few"] { grid-template-rows: auto auto auto minmax(0, 1fr); }
+  .t-rp-here { grid-area: here; } .t-rp-week { grid-area: week; } .t-rp-guide { grid-area: guide; }
+  .t-rp-strands { grid-area: strands; } .t-rp-top3 { grid-area: top3; } .t-rp-acc { grid-area: acc; }
+  .t-rp-summary .t-rp-recent { grid-area: recent; }
+  .t-rp-acc .t-rp-plot { flex: 1 1 auto; height: auto; min-height: 80px; }
+  /* 갈래별은 한 줄씩(이름 · 막대 · 비율 · 반): 칸이 낮아져 실수 칸과 높이가 맞고 남는 높이는 맞힌 비율 그림이 갖는다 */
+  .t-rp-strands .t-rp-strand-list li { grid-template-columns: 4.2em minmax(0, 1fr) 6.2em 3.6em; gap: 8px; }
+  .t-rp-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .t-rp-mistakes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* 진도: 단원 지도 · 성취기준을 나란히 */
+  .t-rp-progress { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* 기록: 그래프 둘을 나란히 → 학습 달력 → 최근 활동(남은 높이) */
+  .t-rp-record { grid-template-rows: auto auto minmax(0, 1fr); }
+  .t-rp-record .t-rp-charts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .t-rp-record .t-rp-plot { height: 170px; }
+  .t-rp-calendar { --cal-cell: 16px; --cal-gap: 4px; }
+}
+/* 폰: 한 줄로 쌓고 창 안에서 내려 본다. 머리는 두 줄(번호·닫기 / 앞뒤 · 사실) */
+@media (max-width: 599px) {
+  .t-rp-head { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "who close" "facts facts" "nav nav"; gap: 6px 10px; padding: 10px 10px 6px 16px; }
+  .t-rp-name { font-size: 1.375em; }
+  .t-rp-nav .t-rp-step { flex: 1 1 0; min-height: 44px; }
+  .t-rp-tabs { margin-inline: 16px; align-self: stretch; }
+  .t-rp-tab { flex: 1 1 0; min-height: 44px; padding: 0 8px; }
+  .t-rp-body { padding: 10px 16px 24px; }
+  .t-rp-grid { min-height: 0; }
+  .t-rp-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .t-rp-strand-list li { grid-template-columns: 4em minmax(0, 1fr) 6.6em; }
+  .t-rp-strand-list .t-rp-class { grid-column: 2 / -1; margin-top: -6px; }
+  .t-rp-unit-list li { grid-template-columns: minmax(0, 1fr) 7.6em; }
+  .t-rp-steps { display: none; }
+  .t-rp-seat, .t-rp-more { min-height: 44px; }
+  .t-rp-calendar { --cal-cell: 11px; --cal-gap: 2px; }
+  .t-rp-side > .t-rp-guide { order: 1; } /* 요약은 실수 → 최근 활동 → 지도 제안 차례로 */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-enter .t-card-x, .t-enter .t-card-x::after, .t-enter .t-page-title, .t-enter .t-page-lead { animation: none; }
+  .t-enter .t-card-x::after { display: none; }
+  .t-page-tab, .t-pick-btn::after, .t-open-kid { transition: none; }
+}

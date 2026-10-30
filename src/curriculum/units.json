@@ -1,0 +1,813 @@
+[
+  {
+    "id": "g1s1-numbers-nine",
+    "grade": 1,
+    "semester": 1,
+    "order": 1,
+    "title": "9까지의 수",
+    "standards": [
+      "[2수01-01]",
+      "[2수01-03]"
+    ]
+  },
+  {
+    "id": "g1s1-solid-shapes",
+    "grade": 1,
+    "semester": 1,
+    "order": 2,
+    "title": "여러 가지 모양",
+    "standards": [
+      "[2수03-01]"
+    ]
+  },
+  {
+    "id": "g1s1-addsub",
+    "grade": 1,
+    "semester": 1,
+    "order": 3,
+    "title": "덧셈과 뺄셈",
+    "standards": [
+      "[2수01-04]",
+      "[2수01-05]",
+      "[2수01-06]"
+    ]
+  },
+  {
+    "id": "g1s1-compare",
+    "grade": 1,
+    "semester": 1,
+    "order": 4,
+    "title": "비교하기",
+    "standards": [
+      "[2수03-06]"
+    ]
+  },
+  {
+    "id": "g1s1-numbers-fifty",
+    "grade": 1,
+    "semester": 1,
+    "order": 5,
+    "title": "50까지의 수",
+    "standards": [
+      "[2수01-01]",
+      "[2수01-03]",
+      "[2수01-04]"
+    ]
+  },
+  {
+    "id": "g1s2-numbers-hundred",
+    "grade": 1,
+    "semester": 2,
+    "order": 1,
+    "title": "100까지의 수",
+    "standards": [
+      "[2수01-01]",
+      "[2수01-03]"
+    ]
+  },
+  {
+    "id": "g1s2-addsub-one",
+    "grade": 1,
+    "semester": 2,
+    "order": 2,
+    "title": "덧셈과 뺄셈(1)",
+    "standards": [
+      "[2수01-05]",
+      "[2수01-06]",
+      "[2수01-08]"
+    ]
+  },
+  {
+    "id": "g1s2-shapes-clock",
+    "grade": 1,
+    "semester": 2,
+    "order": 3,
+    "title": "모양과 시각",
+    "standards": [
+      "[2수03-03]",
+      "[2수03-04]",
+      "[2수03-07]"
+    ]
+  },
+  {
+    "id": "g1s2-addsub-two",
+    "grade": 1,
+    "semester": 2,
+    "order": 4,
+    "title": "덧셈과 뺄셈(2)",
+    "standards": [
+      "[2수01-04]",
+      "[2수01-05]",
+      "[2수01-06]"
+    ]
+  },
+  {
+    "id": "g1s2-patterns",
+    "grade": 1,
+    "semester": 2,
+    "order": 5,
+    "title": "규칙 찾기",
+    "standards": [
+      "[2수02-01]",
+      "[2수02-02]"
+    ],
+    "manualStandards": ["[2수02-02]"]
+  },
+  {
+    "id": "g1s2-addsub-three",
+    "grade": 1,
+    "semester": 2,
+    "order": 6,
+    "title": "덧셈과 뺄셈(3)",
+    "standards": [
+      "[2수01-05]",
+      "[2수01-06]",
+      "[2수01-07]",
+      "[2수01-09]"
+    ]
+  },
+  {
+    "id": "g2s1-numbers-three-digits",
+    "grade": 2,
+    "semester": 1,
+    "order": 1,
+    "title": "세 자리 수",
+    "standards": [
+      "[2수01-02]",
+      "[2수01-03]"
+    ]
+  },
+  {
+    "id": "g2s1-shapes",
+    "grade": 2,
+    "semester": 1,
+    "order": 2,
+    "title": "여러 가지 도형",
+    "standards": [
+      "[2수03-02]",
+      "[2수03-03]",
+      "[2수03-04]",
+      "[2수03-05]"
+    ]
+  },
+  {
+    "id": "g2s1-addsub",
+    "grade": 2,
+    "semester": 1,
+    "order": 3,
+    "title": "덧셈과 뺄셈",
+    "standards": [
+      "[2수01-05]",
+      "[2수01-06]",
+      "[2수01-07]",
+      "[2수01-08]",
+      "[2수01-09]"
+    ]
+  },
+  {
+    "id": "g2s1-length",
+    "grade": 2,
+    "semester": 1,
+    "order": 4,
+    "title": "길이 재기",
+    "standards": [
+      "[2수03-06]",
+      "[2수03-10]",
+      "[2수03-12]"
+    ]
+  },
+  {
+    "id": "g2s1-classify",
+    "grade": 2,
+    "semester": 1,
+    "order": 5,
+    "title": "분류하기",
+    "standards": [
+      "[2수04-01]"
+    ]
+  },
+  {
+    "id": "g2s1-multiplication",
+    "grade": 2,
+    "semester": 1,
+    "order": 6,
+    "title": "곱셈",
+    "standards": [
+      "[2수01-10]"
+    ]
+  },
+  {
+    "id": "g2s2-numbers-four-digits",
+    "grade": 2,
+    "semester": 2,
+    "order": 1,
+    "title": "네 자리 수",
+    "standards": [
+      "[2수01-02]",
+      "[2수01-03]"
+    ]
+  },
+  {
+    "id": "g2s2-times",
+    "grade": 2,
+    "semester": 2,
+    "order": 2,
+    "title": "곱셈구구",
+    "standards": [
+      "[2수01-10]",
+      "[2수01-11]"
+    ]
+  },
+  {
+    "id": "g2s2-length",
+    "grade": 2,
+    "semester": 2,
+    "order": 3,
+    "title": "길이 재기",
+    "standards": [
+      "[2수03-10]",
+      "[2수03-11]",
+      "[2수03-12]",
+      "[2수03-13]"
+    ]
+  },
+  {
+    "id": "g2s2-time",
+    "grade": 2,
+    "semester": 2,
+    "order": 4,
+    "title": "시각과 시간",
+    "standards": [
+      "[2수03-07]",
+      "[2수03-08]",
+      "[2수03-09]"
+    ]
+  },
+  {
+    "id": "g2s2-tables-graphs",
+    "grade": 2,
+    "semester": 2,
+    "order": 5,
+    "title": "표와 그래프",
+    "standards": [
+      "[2수04-02]",
+      "[2수04-03]"
+    ]
+  },
+  {
+    "id": "g2s2-patterns",
+    "grade": 2,
+    "semester": 2,
+    "order": 6,
+    "title": "규칙 찾기",
+    "standards": [
+      "[2수02-01]",
+      "[2수02-02]"
+    ],
+    "manualStandards": ["[2수02-02]"]
+  },
+  {
+    "id": "g3s1-addsub",
+    "grade": 3,
+    "semester": 1,
+    "order": 1,
+    "title": "덧셈과 뺄셈",
+    "standards": [
+      "[4수01-03]",
+      "[4수01-08]"
+    ]
+  },
+  {
+    "id": "g3s1-plane-shapes",
+    "grade": 3,
+    "semester": 1,
+    "order": 2,
+    "title": "평면도형",
+    "standards": [
+      "[4수03-01]",
+      "[4수03-02]",
+      "[4수03-09]",
+      "[4수03-10]"
+    ]
+  },
+  {
+    "id": "g3s1-div",
+    "grade": 3,
+    "semester": 1,
+    "order": 3,
+    "title": "나눗셈",
+    "standards": [
+      "[4수01-05]",
+      "[4수01-06]",
+      "[4수01-08]"
+    ]
+  },
+  {
+    "id": "g3s1-multiplication",
+    "grade": 3,
+    "semester": 1,
+    "order": 4,
+    "title": "곱셈",
+    "standards": [
+      "[4수01-04]",
+      "[4수01-08]"
+    ]
+  },
+  {
+    "id": "g3s1-length-time",
+    "grade": 3,
+    "semester": 1,
+    "order": 5,
+    "title": "길이와 시간",
+    "standards": [
+      "[4수03-13]",
+      "[4수03-14]",
+      "[4수03-15]",
+      "[4수03-16]"
+    ]
+  },
+  {
+    "id": "g3s1-fractions-decimals",
+    "grade": 3,
+    "semester": 1,
+    "order": 6,
+    "title": "분수와 소수",
+    "standards": [
+      "[4수01-09]",
+      "[4수01-10]",
+      "[4수01-11]",
+      "[4수01-12]",
+      "[4수01-14]"
+    ]
+  },
+  {
+    "id": "g3s2-multiplication",
+    "grade": 3,
+    "semester": 2,
+    "order": 1,
+    "title": "곱셈",
+    "standards": [
+      "[4수01-04]",
+      "[4수01-08]"
+    ]
+  },
+  {
+    "id": "g3s2-circles",
+    "grade": 3,
+    "semester": 2,
+    "order": 2,
+    "title": "원",
+    "standards": [
+      "[4수03-06]",
+      "[4수03-07]"
+    ]
+  },
+  {
+    "id": "g3s2-div",
+    "grade": 3,
+    "semester": 2,
+    "order": 3,
+    "title": "나눗셈",
+    "standards": [
+      "[4수01-05]",
+      "[4수01-06]",
+      "[4수01-08]"
+    ]
+  },
+  {
+    "id": "g3s2-weight-capacity",
+    "grade": 3,
+    "semester": 2,
+    "order": 4,
+    "title": "무게와 들이",
+    "standards": [
+      "[4수03-17]",
+      "[4수03-18]",
+      "[4수03-19]",
+      "[4수03-20]",
+      "[4수03-21]",
+      "[4수03-22]",
+      "[4수03-23]"
+    ]
+  },
+  {
+    "id": "g3s2-fractions",
+    "grade": 3,
+    "semester": 2,
+    "order": 5,
+    "title": "분수",
+    "standards": [
+      "[4수01-09]",
+      "[4수01-10]",
+      "[4수01-11]"
+    ]
+  },
+  {
+    "id": "g3s2-picture-graphs",
+    "grade": 3,
+    "semester": 2,
+    "order": 6,
+    "title": "그림그래프",
+    "standards": [
+      "[4수04-01]"
+    ]
+  },
+  {
+    "id": "g4s1-large-numbers",
+    "grade": 4,
+    "semester": 1,
+    "order": 1,
+    "title": "큰 수",
+    "standards": [
+      "[4수01-01]",
+      "[4수01-02]"
+    ]
+  },
+  {
+    "id": "g4s1-angles",
+    "grade": 4,
+    "semester": 1,
+    "order": 2,
+    "title": "각도",
+    "standards": [
+      "[4수03-02]",
+      "[4수03-24]",
+      "[4수03-25]"
+    ]
+  },
+  {
+    "id": "g4s1-multiply-divide",
+    "grade": 4,
+    "semester": 1,
+    "order": 3,
+    "title": "곱셈과 나눗셈",
+    "standards": [
+      "[4수01-04]",
+      "[4수01-07]",
+      "[4수01-08]"
+    ]
+  },
+  {
+    "id": "g4s1-shape-movement",
+    "grade": 4,
+    "semester": 1,
+    "order": 4,
+    "title": "평면도형의 이동",
+    "standards": [
+      "[4수03-04]",
+      "[4수03-05]"
+    ]
+  },
+  {
+    "id": "g4s1-fraction-addsub",
+    "grade": 4,
+    "semester": 1,
+    "order": 5,
+    "title": "분수의 덧셈과 뺄셈",
+    "standards": [
+      "[4수01-15]"
+    ]
+  },
+  {
+    "id": "g4s1-bar-graphs",
+    "grade": 4,
+    "semester": 1,
+    "order": 6,
+    "title": "막대그래프",
+    "standards": [
+      "[4수04-01]",
+      "[4수04-03]"
+    ]
+  },
+  {
+    "id": "g4s2-decimal-addsub",
+    "grade": 4,
+    "semester": 2,
+    "order": 1,
+    "title": "소수의 덧셈과 뺄셈",
+    "standards": [
+      "[4수01-13]",
+      "[4수01-14]",
+      "[4수01-16]"
+    ]
+  },
+  {
+    "id": "g4s2-triangles",
+    "grade": 4,
+    "semester": 2,
+    "order": 2,
+    "title": "삼각형",
+    "standards": [
+      "[4수03-08]",
+      "[4수03-09]"
+    ]
+  },
+  {
+    "id": "g4s2-patterns-equations",
+    "grade": 4,
+    "semester": 2,
+    "order": 3,
+    "title": "규칙 찾기와 식 만들기",
+    "standards": [
+      "[4수02-01]",
+      "[4수02-02]",
+      "[4수02-03]"
+    ]
+  },
+  {
+    "id": "g4s2-quadrilaterals",
+    "grade": 4,
+    "semester": 2,
+    "order": 4,
+    "title": "사각형",
+    "standards": [
+      "[4수03-03]",
+      "[4수03-10]"
+    ]
+  },
+  {
+    "id": "g4s2-line-graphs",
+    "grade": 4,
+    "semester": 2,
+    "order": 5,
+    "title": "꺾은선그래프",
+    "standards": [
+      "[4수04-02]",
+      "[4수04-03]"
+    ]
+  },
+  {
+    "id": "g4s2-polygons",
+    "grade": 4,
+    "semester": 2,
+    "order": 6,
+    "title": "다각형",
+    "standards": [
+      "[4수03-11]",
+      "[4수03-12]"
+    ]
+  },
+  {
+    "id": "g5s1-mixed-operations",
+    "grade": 5,
+    "semester": 1,
+    "order": 1,
+    "title": "자연수의 혼합 계산",
+    "standards": [
+      "[6수01-01]"
+    ]
+  },
+  {
+    "id": "g5s1-factors-multiples",
+    "grade": 5,
+    "semester": 1,
+    "order": 2,
+    "title": "약수와 배수",
+    "standards": [
+      "[6수01-04]",
+      "[6수01-05]"
+    ]
+  },
+  {
+    "id": "g5s1-reduce-common-denominators",
+    "grade": 5,
+    "semester": 1,
+    "order": 3,
+    "title": "약분과 통분",
+    "standards": [
+      "[6수01-06]",
+      "[6수01-07]",
+      "[6수01-12]"
+    ]
+  },
+  {
+    "id": "g5s1-correspondence",
+    "grade": 5,
+    "semester": 1,
+    "order": 4,
+    "title": "대응 관계",
+    "standards": [
+      "[6수02-01]"
+    ]
+  },
+  {
+    "id": "g5s1-fraction-addsub",
+    "grade": 5,
+    "semester": 1,
+    "order": 5,
+    "title": "분수의 덧셈과 뺄셈",
+    "standards": [
+      "[6수01-08]"
+    ]
+  },
+  {
+    "id": "g5s1-perimeter-area",
+    "grade": 5,
+    "semester": 1,
+    "order": 6,
+    "title": "다각형의 둘레와 넓이",
+    "standards": [
+      "[6수03-11]",
+      "[6수03-12]",
+      "[6수03-13]",
+      "[6수03-14]"
+    ]
+  },
+  {
+    "id": "g5s2-range-rounding",
+    "grade": 5,
+    "semester": 2,
+    "order": 1,
+    "title": "수의 범위와 어림하기",
+    "standards": [
+      "[6수01-02]",
+      "[6수01-03]"
+    ]
+  },
+  {
+    "id": "g5s2-fraction-multiply",
+    "grade": 5,
+    "semester": 2,
+    "order": 2,
+    "title": "분수의 곱셈",
+    "standards": [
+      "[6수01-09]"
+    ]
+  },
+  {
+    "id": "g5s2-congruence-symmetry",
+    "grade": 5,
+    "semester": 2,
+    "order": 3,
+    "title": "합동과 대칭",
+    "standards": [
+      "[6수03-01]",
+      "[6수03-02]"
+    ]
+  },
+  {
+    "id": "g5s2-decimal-multiply",
+    "grade": 5,
+    "semester": 2,
+    "order": 4,
+    "title": "소수의 곱셈",
+    "standards": [
+      "[6수01-13]"
+    ]
+  },
+  {
+    "id": "g5s2-cuboids",
+    "grade": 5,
+    "semester": 2,
+    "order": 5,
+    "title": "직육면체",
+    "standards": [
+      "[6수03-03]",
+      "[6수03-04]"
+    ]
+  },
+  {
+    "id": "g5s2-average-likelihood",
+    "grade": 5,
+    "semester": 2,
+    "order": 6,
+    "title": "평균과 가능성",
+    "standards": [
+      "[6수04-01]",
+      "[6수04-04]",
+      "[6수04-05]",
+      "[6수04-06]"
+    ]
+  },
+  {
+    "id": "g6s1-fraction-divide",
+    "grade": 6,
+    "semester": 1,
+    "order": 1,
+    "title": "분수의 나눗셈",
+    "standards": [
+      "[6수01-10]",
+      "[6수01-11]"
+    ]
+  },
+  {
+    "id": "g6s1-prisms-pyramids",
+    "grade": 6,
+    "semester": 1,
+    "order": 2,
+    "title": "각기둥과 각뿔",
+    "standards": [
+      "[6수03-05]",
+      "[6수03-06]"
+    ]
+  },
+  {
+    "id": "g6s1-decimal-divide",
+    "grade": 6,
+    "semester": 1,
+    "order": 3,
+    "title": "소수의 나눗셈",
+    "standards": [
+      "[6수01-14]",
+      "[6수01-15]"
+    ]
+  },
+  {
+    "id": "g6s1-ratio-rate",
+    "grade": 6,
+    "semester": 1,
+    "order": 4,
+    "title": "비와 비율",
+    "standards": [
+      "[6수02-02]",
+      "[6수02-03]"
+    ]
+  },
+  {
+    "id": "g6s1-graphs",
+    "grade": 6,
+    "semester": 1,
+    "order": 5,
+    "title": "여러 가지 그래프",
+    "standards": [
+      "[6수04-02]",
+      "[6수04-03]"
+    ]
+  },
+  {
+    "id": "g6s1-cuboid-area-volume",
+    "grade": 6,
+    "semester": 1,
+    "order": 6,
+    "title": "직육면체의 겉넓이와 부피",
+    "standards": [
+      "[6수03-17]",
+      "[6수03-18]",
+      "[6수03-19]"
+    ]
+  },
+  {
+    "id": "g6s2-fraction-divide",
+    "grade": 6,
+    "semester": 2,
+    "order": 1,
+    "title": "분수의 나눗셈",
+    "standards": [
+      "[6수01-11]"
+    ]
+  },
+  {
+    "id": "g6s2-space-solids",
+    "grade": 6,
+    "semester": 2,
+    "order": 2,
+    "title": "공간과 입체",
+    "standards": [
+      "[6수03-09]",
+      "[6수03-10]"
+    ]
+  },
+  {
+    "id": "g6s2-decimal-divide",
+    "grade": 6,
+    "semester": 2,
+    "order": 3,
+    "title": "소수의 나눗셈",
+    "standards": [
+      "[6수01-15]"
+    ]
+  },
+  {
+    "id": "g6s2-proportion-distribution",
+    "grade": 6,
+    "semester": 2,
+    "order": 4,
+    "title": "비례식과 비례배분",
+    "standards": [
+      "[6수02-04]",
+      "[6수02-05]"
+    ]
+  },
+  {
+    "id": "g6s2-circle-perimeter-area",
+    "grade": 6,
+    "semester": 2,
+    "order": 5,
+    "title": "원의 둘레와 넓이",
+    "standards": [
+      "[6수03-15]",
+      "[6수03-16]"
+    ]
+  },
+  {
+    "id": "g6s2-cylinders-cones-spheres",
+    "grade": 6,
+    "semester": 2,
+    "order": 6,
+    "title": "원기둥, 원뿔, 구",
+    "standards": [
+      "[6수03-07]",
+      "[6수03-08]"
+    ]
+  }
+]

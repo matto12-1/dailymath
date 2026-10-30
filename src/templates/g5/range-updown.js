@@ -1,0 +1,8 @@
+import {define,meta,casesSpec,errors,wrong,fill} from './helpers.js?v=9a67f36b25';
+const result=v=>(v.up?Math.ceil(v.n/v.k):Math.floor(v.n/v.k))*v.k;
+const cases=[];for(const k of [10,100])for(let n=k;n<=999;n++)for(const up of [false,true]){const v={n,k,up},a=result(v),xs=[Math.round(n/k)*k,(up?Math.ceil(n/(10*k)):Math.floor(n/(10*k)))*10*k].filter(x=>x!==null&&x!==a);if(new Set(xs).size>=1)cases.push(v);}
+export default define(meta('range','updown',3,'estimate',['01-03'],'올림과 버림'),{
+ input:'number',errorCount:3,minMistakes:2,texts:['〔{n}〕{method}하여 {place}의 자리까지 나타내면 얼마일까요?', '〔{n}〕{place}의 자리까지 {method}한 어림값은 얼마일까요?'],
+ ...casesSpec(cases,result,v=>{const q=Math.floor(v.n/v.k),r=v.n%v.k;return (q+(v.up&&r>0?1:0))*v.k;},v=>({...v,method:v.up?'올림':'버림',action:v.up?'올려서':'버려서',place:v.k===10?'십':'백',higher:v.k===10?'백':'천',lower:v.k===10?'일':'십',remaining:v.n%v.k,resultText:v.n%v.k===0?'구하려는 자리 아래가 모두 0이므로 그대로 둡니다.':fill(v.up?'{place}의 자리 아래에 {rest:이/가} 있으므로 {floor}보다 {k} 큰 수로 올립니다.':'{place}의 자리 아래 수인 {rest:을/를} 버립니다.',{place:v.k===10?'십':'백',rest:v.n%v.k,floor:Math.floor(v.n/v.k)*v.k,k:v.k}),...errors(wrong(Math.round(v.n/v.k)*v.k,'반올림과 혼동','{method}해야 하는데 반올림했습니다. {method:은/는} 반올림과 달리 구하려는 자리 아래 수를 {action} 나타내므로 {answer:입니다}.'),wrong((v.up?Math.ceil(v.n/(10*v.k)):Math.floor(v.n/(10*v.k)))*10*v.k,'한 자리 높게 어림하기','{place}의 자리가 아니라 {higher}의 자리까지 {method}했습니다. {higher}의 자리 대신 {place}의 자리 아래 수만 {action} 나타내면 {answer:입니다}.'),wrong(v.up?v.n+v.k:v.n-v.k,'어림을 일정한 수 더하거나 빼기로 생각하기','{method}을 원래 수 {n}에서 {k:을/를} 더하거나 빼는 셈으로 생각했습니다. {place}의 자리 아래 수를 {action} 어림하면 {answer:입니다}.'))})),
+ solution:'{resultText}\n따라서 {n:을/를} {method}하여 {place}의 자리까지 나타내면 {answer:입니다}.',
+});

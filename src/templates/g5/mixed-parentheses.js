@@ -1,0 +1,10 @@
+import {define,meta,casesSpec,errors,wrong,lcm,fill} from './helpers.js?v=9a67f36b25';
+const cases=[];
+for(let b=2;b<=8;b++)for(let c=1;c<=5;c++)for(let q=1;q<=6;q++)for(let d=2;d<=5;d++)for(let e=1;e<=9;e++){const a=lcm(b,b+c)*q;if(a<=1000&&a/(b+c)*d>=e&&a/b+c*d-e!==a/(b+c)*d-e)cases.push({type:0,a,b,c,d,e});}
+for(let a=2;a<=15;a++)for(let b=2;b<=12;b++)for(let c=2;c<=9;c++)for(let d=2;d<=9;d++)if((a+b)*c%d===0&&b*c%d===0)cases.push({type:1,a,b,c,d});
+const answer=v=>v.type===0?v.a/(v.b+v.c)*v.d-v.e:(v.a+v.b)*v.c/v.d;
+export default define(meta('mixed','parentheses',3,'calc',['01-01'],'괄호가 있는 네 연산'),{
+ input:'number',texts:['{question}'],
+ ...casesSpec(cases,answer,v=>v.type===0?Number(BigInt(v.a)/BigInt(v.b+v.c)*BigInt(v.d)-BigInt(v.e)):Number(BigInt(v.a+v.b)*BigInt(v.c)/BigInt(v.d)),v=>v.type===0?({...v,question:'〔'+v.a+' ÷ ('+v.b+' + '+v.c+') × '+v.d+' − '+v.e+' = ?〕계산하면 얼마일까요?',explanation:fill('괄호 안 {b} + {c} = {inside}부터 구합니다. {a} ÷ {inside} = {quotient}, {quotient} × {d} = {product}, {product} − {e} = {answer:입니다}.',{...v,inside:v.b+v.c,quotient:v.a/(v.b+v.c),product:v.a/(v.b+v.c)*v.d,answer:answer(v)}),...errors(wrong(v.a/v.b+v.c*v.d-v.e,'괄호 무시하기','괄호를 무시하고 {a} ÷ {b} + {c} × {d} − {e:을/를} 계산했습니다. {explanation}'),wrong(v.a/(v.b+v.c)*v.d,'마지막 뺄셈 빠뜨리기',fill('{a} ÷ {inside} × {d} = {product}까지만 계산하고 마지막에 {e:을/를} 빼지 않았습니다. 남은 뺄셈까지 하면 {product} − {e} = {answer:입니다}.',{...v,inside:v.b+v.c,product:v.a/(v.b+v.c)*v.d,answer:answer(v)})))}):({...v,question:'〔('+v.a+' + '+v.b+') × '+v.c+' ÷ '+v.d+' = ?〕계산하면 얼마일까요?',explanation:fill('괄호 안 {a} + {b} = {inside}부터 구합니다. {inside} × {c} = {product}, {product} ÷ {d} = {answer:입니다}.',{...v,inside:v.a+v.b,product:(v.a+v.b)*v.c,answer:answer(v)}),...errors(wrong(v.a+v.b*v.c/v.d,'괄호 무시하기','괄호를 무시하고 {b} × {c} ÷ {d:을/를} 먼저 계산했습니다. {explanation}'),wrong((v.a+v.b)*v.c,'마지막 나눗셈 빠뜨리기','{a} + {b:을/를} 구해 {c:을/를} 곱한 뒤 {d:으로/로} 나누지 않았습니다. 마지막 나눗셈까지 하면 ({a} + {b}) × {c} ÷ {d} = {answer:입니다}.'))})),
+ solution:'{explanation}\n따라서 답은 {answer:입니다}.',
+});

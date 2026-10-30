@@ -1,0 +1,6 @@
+import {define,meta,errors,wrong,dec,repeated,decimalProduct} from './helpers.js?v=9a67f36b25';
+export default define(meta('decimalmul','mixed',3,'calc',['01-13'],'자릿수가 다른 소수의 곱'),{
+ input:'number',answerKind:'decimal',texts:['〔{left} × {right} = ?〕계산하면 얼마일까요?'],
+ draw(rng){const [p,q]=rng.pick([[1,2],[2,1],[1,3],[3,1]]),A=p===3?rng.pick([125,375,625,875,1125,1375,1625,1875,2125,2375,2625,2875]):q===3?rng.int(2,9):rng.int(1,3*10**p),B=q===3?rng.pick([125,375,625,875,1125,1375,1625,1875,2125,2375,2625,2875]):p===3?rng.int(2,9):rng.int(1,3*10**q);if(A%10===0||B%10===0)return null;return {A,B,p,q,places:p+q,placesName:['','한','두','세','네'][p+q],pName:['','한','두','세'][p],qName:['','한','두','세'][q],left:dec(A,p),right:dec(B,q),product:A*B,productText:decimalProduct(A*B,p+q),zeroText:A*B%10===0?'소수 끝자리의 0은 수의 크기를 바꾸지 않으므로 생략합니다.':'',...errors(wrong(dec(A*B,p),'첫 수의 소수 자릿수만 생각하기','첫 수 {left}의 소수 {pName} 자리만 생각했습니다. 둘째 수의 소수 {qName} 자리도 더한 소수 {placesName} 자리에 소수점을 맞추면 {answer:입니다}.'),wrong(dec(A*B,q),'둘째 수의 소수 자릿수만 생각하기','둘째 수 {right}의 소수 {qName} 자리만 생각했습니다. 첫 수의 소수 {pName} 자리도 더한 소수 {placesName} 자리에 소수점을 맞추면 {answer:입니다}.'))};},
+ answer:v=>dec(v.A*v.B,v.p+v.q),check:v=>dec(repeated(v.A,v.B),v.p+v.q),solution:'{A} × {B} = {product:입니다}.\n소수 자릿수는 {p} + {q} = {places:입니다}. 자연수 곱에 그만큼 소수 자리를 표시합니다. {zeroText}\n따라서 답은 {answer:입니다}.',
+});

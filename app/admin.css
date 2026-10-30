@@ -1,0 +1,347 @@
+/* 관리 화면(app/admin.html)에만 있는 생김새. app.css → staff.css(색 값 두 판·글꼴·쪽 공통 규칙·알림 줄·구글 로그인 칸·
+   시트 바탕·밝기 단추·푸터 색·폰 단추 44px 바닥, Ruling R34) 다음에 읽는다. 색은 staff.css의 이름 붙은 값(--c-*)만 쓴다.
+   칸 배치는 그대로 두고 선생님 화면과 같은 결(2026-10-22 오후 결정 V14 배치, 저녁 결정 「살구·먹색」 색: 맨 위 줄 알약 · 왼쪽 아이콘 줄, 틀은 staff.css)로 입혔다.
+   폭 전체를 쓴다(가운데 좁게 묶지 않는다).
+   1100px부터 기다리는 신청 왼쪽·인증된 선생님 오른쪽, 그 아래는 위아래. 760px 아래(폰)는 선생님 표가 사람마다 카드.
+   두 목록 아래 「지우기」 칸(지워 달라는 요청)의 작은 폼 셋: 메일·열쇠는 900px부터 나란히, 반 코드와 번호는 그 아래 한 줄 가득.
+   증명서 보기는 넓으면 가운데 큰 창, 700px 아래는 화면 가득.
+   아이디로 들어오는 판(구글 로그인 꺼짐)의 첫 화면은 선생님 계정 표(관리 첫 화면 Ⓑ)이고, 계정 만들기는 그 위 큰 시트. */
+
+
+/* ── 공통(이 쪽에만 있는 입력 칸) ── 쪽 공통 요소 규칙과 같이 :where(.admin-page)로 점수를 낮춘다(staff.css 머리 설명) */
+:where(.admin-page) :is(input, textarea) { width: 100%; }
+:where(.admin-page) textarea { display: block; min-height: 5.5em; resize: vertical; line-height: 1.5; }
+:where(.admin-page) :is(dl, dd) { margin: 0; }
+
+.a-hint { color: var(--c-text-2); font-size: .8125em; margin: 0; }
+.a-none { color: var(--c-text-2); }
+.a-loading { color: var(--c-text-2); text-align: center; padding: 3em 0; }
+.a-alert { background: var(--c-bad-soft); border: 1px solid var(--c-bad-line); color: var(--c-bad-ink); border-radius: 14px; padding: .75em 1em; }
+.a-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+
+/* ── 맨 위 줄(틀은 staff.css .s-top): 제목(살구색 동그라미 방패) · 메일 칸. 왼쪽 아이콘 줄은 밝기 · 개인정보 안내 · 로그아웃 ── */
+.a-head { justify-content: space-between; flex-wrap: wrap; }
+.a-head > .s-top-end { margin-left: auto; } /* 폰에서 둘째 줄로 내려가도 오른쪽 */
+.a-brand { --brand-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5 5 6v5.5c0 4.2 3 7.6 7 9 4-1.4 7-4.8 7-9V6Z'/%3E%3Cpath d='m9 12 2.2 2.2L15.5 10'/%3E%3C/svg%3E"); }
+.a-account { gap: 10px; padding: 5px 18px 5px 5px; max-width: min(420px, 60vw); font-size: .9375em; }
+.a-avatar { flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--c-surface-2); border: 1px solid var(--c-border); display: grid; place-items: center; }
+.a-avatar::before {
+  content: ''; width: 18px; height: 18px; background: var(--c-text-2);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.a-who { color: var(--c-text-2); min-width: 0; overflow-wrap: anywhere; font-size: .875em; }
+.a-logout { min-height: 44px; padding-left: 0; }
+
+/* ── 본문 ── */
+#admin { display: flex; flex-direction: column; gap: var(--s-gap); padding: 12px var(--s-pad) 40px calc(var(--s-pad) * .5); }
+.a-card, .a-panel { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--s-radius); box-shadow: var(--c-shadow); }
+.a-card { padding: clamp(20px, 2.6vw, 40px); display: grid; gap: 16px; }
+.a-panel { padding: 20px 22px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.a-card h2 { font-size: clamp(1.6rem, 1.15rem + 1vw, 2.1rem); font-weight: 600; letter-spacing: -.035em; }
+.a-panel h2 { font-size: 1.1875em; font-weight: 600; }
+.a-lead { font-size: 1.0625em; line-height: 1.65; }
+
+/* 로그인: 넓으면 왼쪽 설명, 오른쪽 할 일 */
+.a-split { grid-template-columns: minmax(0, 1fr); align-items: start; gap: var(--s-gap); }
+@media (min-width: 900px) { .a-split { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+.a-intro { display: grid; gap: 12px; align-content: start; }
+.a-action { display: grid; gap: 12px; align-content: start; background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: 16px; padding: clamp(16px, 2vw, 28px); }
+/* 구글 로그인 칸(google-login.js의 .g-*, 바탕은 staff.css): 개발용 메일 칸도 44px */
+.g-dev input { min-height: 44px; }
+
+/* 관리자가 아님: 선생님 화면으로 가는 길(단추 꼴) */
+.a-to-teacher {
+  display: inline-flex; align-items: center; min-height: 44px; padding: .45em 1.2em; border-radius: 999px; font-weight: 600;
+  background: var(--c-accent); border: 1px solid var(--c-accent); color: var(--c-on-accent); text-decoration: none;
+}
+
+/* ── 목록 ── */
+.a-board { display: grid; gap: var(--s-gap); }
+.a-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.a-lists { display: grid; gap: var(--s-gap); align-items: start; }
+@media (min-width: 1100px) { .a-lists { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } }
+.a-panel-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.a-count { color: var(--c-text-2); font-size: .875em; font-weight: 600; font-variant-numeric: tabular-nums; }
+.a-empty { margin: 0; color: var(--c-text-2); background: var(--c-surface-2); border: 1px dashed var(--c-border-2); border-radius: 16px; padding: 1.2em 1em; }
+
+/* 기다리는 신청 카드 */
+.a-certs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.a-cert { container-type: inline-size; display: grid; gap: 12px; align-content: start; min-width: 0; padding: 18px 20px; border-radius: 16px; background: var(--c-surface-2); border: 1px solid var(--c-border); }
+.a-cert-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; }
+.a-school { font-size: 1.125em; font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+.a-left {
+  padding: .1em .7em; border-radius: 999px; font-size: .75rem; font-weight: 600; line-height: 1.6; white-space: nowrap;
+  color: var(--c-good-ink); background: var(--c-good-soft); border: 1px solid var(--c-good-line);
+}
+.a-left[data-soon="true"] { color: var(--c-bad-ink); background: var(--c-bad-soft); border-color: var(--c-bad-line); }
+.a-facts { display: grid; gap: 4px; }
+.a-facts > div { display: grid; grid-template-columns: 6em minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.a-facts dt { color: var(--c-text-2); font-size: .8125em; }
+.a-facts dd { overflow-wrap: anywhere; }
+/* 카드가 좁으면 이름표를 값 위에 얹어 메일이 낱말 가운데서 끊기지 않게 */
+@container (max-width: 380px) {
+  .a-facts { gap: 8px; }
+  .a-facts > div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+.a-cert-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.a-cert-actions button { flex: 1 1 auto; }
+
+/* 인증된 선생님 표(사례 1·4처럼 머리는 작은 회색 글자, 줄 사이 가는 선 하나). 메일·학교는 아무 데서나 끊어 표가 넘치지 않게, 날짜·반 수는 한 줄 */
+.a-table-wrap { overflow-x: auto; }
+.a-table { width: 100%; border-collapse: collapse; font-size: .9375em; }
+.a-table th, .a-table td { text-align: left; vertical-align: top; padding: 10px 10px; }
+.a-table thead th { font-weight: 600; color: var(--c-text-2); font-size: .8125em; white-space: nowrap; border-bottom: 1px solid var(--c-border); }
+.a-table tbody > tr > * { border-bottom: 1px solid var(--c-border); }
+.a-table tbody > tr:last-child > * { border-bottom: 0; }
+.a-table tbody th { font-weight: 600; }
+.a-table :is(.c-mail, .c-school) { overflow-wrap: anywhere; }
+.a-table :is(.c-day, .c-classes) { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.a-table .c-day { color: var(--c-text-2); }
+.a-table .c-classes { text-align: right; }
+
+/* ── 지우기(지워 달라는 요청, 2026-10-21): 목록 아래 칸에 작은 폼 셋. 메일·열쇠는 900px부터 나란히, 반 코드와 번호(R52)는 그 아래 한 줄 가득
+   (넓으면 두 칸 · 그림 판 · [찾기]를 왼쪽부터 채우는 차례로 한 줄에). 찾은 것 한 줄과 붉은 [지우기] ── */
+.a-erase-forms { display: grid; gap: 12px; align-items: start; }
+@media (min-width: 900px) {
+  .a-erase-forms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .a-erase-form[data-by="seat"] { grid-column: 1 / -1; }
+}
+.a-erase-form { display: grid; gap: 10px; min-width: 0; padding: 18px 20px; border-radius: 16px; background: var(--c-surface-2); border: 1px solid var(--c-border); }
+.a-erase-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.a-erase-row input { flex: 1 1 14em; width: auto; min-width: 0; min-height: 44px; }
+.a-erase-pics { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.a-erase-pics legend { padding: 0; margin-bottom: 6px; }
+.a-erase-pics select { flex: 1 1 8em; min-height: 44px; }
+/* 반 코드와 번호로 찾기: 폰은 두 칸 → 그림 판 → [찾기] 위아래로, 900px부터 한 줄(메일·열쇠 폼처럼 [찾기]는 오른쪽 끝) */
+.a-erase-seat-body { display: grid; gap: 12px; grid-template-areas: "fields" "pad" "go"; }
+.a-erase-seat { grid-area: fields; display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 8px 10px; align-content: start; }
+.a-erase-field { display: grid; gap: 4px; min-width: 0; }
+.a-erase-field input { min-height: 44px; }
+.a-erase-pad { grid-area: pad; min-width: 0; }
+.a-erase-go { grid-area: go; display: flex; }
+@media (min-width: 900px) {
+  .a-erase-seat-body { grid-template-columns: minmax(0, 1fr) minmax(0, 420px) auto; grid-template-areas: "fields pad go"; column-gap: 28px; align-items: start; }
+  .a-erase-go { align-self: end; }
+}
+/* 비밀 그림 판(app/pics.js picPad): 아이 화면과 같은 3×3을 작게. 아이 화면 생김새(link.css)는 이 쪽에서 읽지 않는다.
+   그림 칸은 어두운 판에서도 흰 바탕(가게 아이콘은 밝은 바탕에 맞춰 그렸다) */
+.a-erase-pad .pic-pad { display: grid; gap: 8px; }
+.a-erase-pad .pic-top { display: grid; gap: 6px; justify-items: start; }
+.a-erase-pad .pic-title { font-size: .9375em; font-weight: 600; }
+.a-erase-pad .pic-slots { display: flex; align-items: center; gap: 8px; }
+.a-erase-pad .pic-slot { width: 44px; height: 44px; display: grid; place-items: center; border: 1px dashed var(--c-border-2); border-radius: 10px; background: var(--c-surface); }
+.a-erase-pad .pic-slot.filled { border-style: solid; background: #fff; }
+.a-erase-pad .pic-slot img { width: 80%; height: 80%; object-fit: contain; }
+.a-erase-pad .pic-slot b { font-weight: 600; color: var(--c-text-2); }
+.a-erase-pad .pic-say:empty { display: none; }
+.a-erase-pad .pic-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; max-width: 420px; }
+.a-erase-pad .pic { display: grid; justify-items: center; align-content: center; gap: 2px; min-width: 0; padding: 4px; background: var(--c-surface); }
+.a-erase-pad .pic img { width: 34px; height: 34px; object-fit: contain; }
+.a-erase-pad .pic-name { font-size: .8125em; line-height: 1.2; }
+.a-erase-found { display: grid; gap: 10px; justify-items: start; padding-top: 10px; border-top: 1px dashed var(--c-border); }
+/* 찾은 것이 없으면(.is-found 없음) 자리를 차지하지 않되 화면 읽개에는 남긴다(.t-msg:empty와 같은 까닭, 다시 검토 Minor 1) */
+.a-erase-found:not(.is-found) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); padding: 0; border: 0; }
+.a-erase-summary { line-height: 1.6; overflow-wrap: anywhere; }
+/* 되돌릴 수 없는 [지우기]: 옅은 분홍 바탕·붉은 글(진한 색 덩어리 없이, 알림 칸 .a-alert와 같은 결) */
+.a-danger { background-color: var(--c-bad-soft); border-color: var(--c-bad-line); color: var(--c-bad-ink); }
+.a-danger:not(:disabled):hover { border-color: var(--c-bad-ink); }
+
+/* ── 시트(sheet.js, 바탕은 staff.css): 승인·거절은 폰은 아래에서 올라오고 넓으면 가운데 창 ── */
+.a-sheet-who { color: var(--c-text-2); overflow-wrap: anywhere; }
+.a-sheet-text { line-height: 1.6; }
+.a-sheet-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.a-sheet-actions button { flex: 1 1 8em; min-height: 44px; }
+.a-decide { display: grid; gap: 14px; }
+.a-field { display: grid; gap: 6px; }
+.a-field input { min-height: 44px; }
+.a-label { font-size: .875em; font-weight: 600; }
+/* 거절 까닭: 줄 전체가 누르는 칸(44px) */
+.a-reasons { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: 8px; }
+.a-reasons legend { padding: 0; margin-bottom: 6px; font-weight: 600; }
+.a-choice { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: .35em .9em; border: 1px solid var(--c-border-2); border-radius: 14px; background: var(--c-surface); cursor: pointer; }
+.a-choice:has(input:checked) { border-color: var(--c-accent); background: var(--c-accent-soft); }
+.a-choice input { flex: none; width: 1.2em; height: 1.2em; margin: 0; padding: 0; accent-color: var(--c-accent); }
+
+/* 증명서 보기: 머리·한 줄·파일 칸(남은 높이 전부)·단추 줄. 그림(canvas 하나)은 칸에 맞추고, [원래 크기]면 제 픽셀 크기로 칸 안에서 밀어 본다.
+   PDF(pdf.js, Ruling R33)는 쪽마다 canvas를 칸 너비에 맞춰 위아래로 늘어놓고 칸 안에서 민다 */
+.sheet.a-viewer { overflow: hidden; gap: 10px; padding: 18px 16px 16px; }
+.a-viewer .a-sheet-actions { justify-content: flex-end; } /* 승인·거절은 늘 오른쪽, [원래 크기]는 왼쪽 */
+.a-viewer .a-sheet-actions button { flex: 0 1 auto; min-width: 7em; }
+.a-viewer .a-zoom { margin-right: auto; }
+.a-file { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: 12px; -webkit-touch-callout: none; }
+.a-file > canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
+.a-file[data-zoom="true"] { overflow: auto; }
+.a-file[data-zoom="true"] > canvas { position: static; width: auto; height: auto; }
+.a-file:is([data-state="wait"], [data-state="note"]) { display: grid; place-content: center; justify-items: center; gap: 12px; padding: 1.5em; text-align: center; }
+.a-file-note { color: var(--c-text-2); }
+.a-file[data-state="note"] .a-file-note { color: var(--c-bad-ink); }
+/* 세로 막대 자리는 늘 비워 둔다: 쪽을 그리는 사이에 막대가 생겨 칸 너비가 바뀌지 않게(그린 너비 = 보이는 너비) */
+.a-file[data-state="pdf"] { overflow-y: auto; scrollbar-gutter: stable; background: var(--c-bar-track); }
+.a-pages { display: grid; gap: 12px; padding: 12px; }
+.a-pages > canvas { display: block; width: 100%; height: auto; background: #fff; border-radius: 4px; box-shadow: 0 0 0 1px var(--c-border), var(--c-shadow); }
+.a-pages-more { color: var(--c-text-2); text-align: center; font-size: .875em; }
+
+@media (max-width: 699px) {
+  .sheet.a-viewer { height: 100dvh; max-height: none; border: 0; border-radius: 0; animation: none; }
+}
+@media (min-width: 700px) {
+  .sheet.a-decide-sheet, .sheet.a-erase-sheet { width: min(560px, 92vw); }
+  .sheet.a-sheet:not(.a-viewer):not(.a-decide-sheet):not(.a-erase-sheet):not(.a-create-sheet) { width: min(500px, 92vw); }
+  .sheet.a-viewer { width: min(1200px, 96vw); height: calc(100dvh - 48px); max-height: none; }
+}
+
+/* ── 폰 ── 작게 둔 단추(로그아웃)도 44px(쪽 공통 단추 바닥은 staff.css). 선생님 표는 사람마다 카드 */
+@media (max-width: 759px) {
+  .a-table, .a-table tbody, .a-table tr, .a-table th, .a-table td { display: block; }
+  .a-table thead { display: none; }
+  .a-table tbody { display: grid; gap: 10px; }
+  .a-table tbody tr { display: grid; gap: 4px; padding: 12px 14px; background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: 12px; }
+  .a-table tbody > tr > * { border: 0; padding: 0; }
+  .a-table td[data-label] { display: grid; grid-template-columns: 6em minmax(0, 1fr); gap: 8px; text-align: left; white-space: normal; }
+  .a-table td[data-label]::before { content: attr(data-label); color: var(--c-text-2); font-size: .875em; }
+}
+/* ── 관리 첫 화면 Ⓑ(admin/home.js, 설계서 4-4): 맨 위 줄(제목 · 찾기 · [선생님 계정 만들기]) → 요약 숫자 여섯 칸(넷은 누르면 그 계정만) →
+   큰 표 하나(묶음 머리줄 지역 · 학교 · 학년도 아래 반 줄). 표 머리는 쪽을 내려도 위에 붙는다. 900px 아래는 반 줄이 카드(칸 이름은 data-label) ── */
+.a-home { display: grid; gap: 12px; min-width: 0; }
+.a-home-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.a-home-title { display: grid; gap: 2px; min-width: 0; margin-right: auto; }
+.a-home-title h2 { font-size: 1.375em; }
+.a-home-search { flex: 0 1 22em; min-height: 44px; }
+.a-home-make { min-height: 44px; }
+.a-home-shown:empty { display: none; }
+.a-summary { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 1200px) { .a-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 759px) { .a-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } }
+.a-stat {
+  display: grid; gap: 2px; align-content: start; justify-items: start; min-width: 0; padding: 12px 16px; border-radius: 16px;
+  background: var(--c-surface); border: 1px solid var(--c-border); text-align: left; font-size: 1em; font-weight: 400; line-height: 1.35;
+}
+.a-stat span, .a-stat small { color: var(--c-text-2); font-size: .8125rem; font-weight: 500; }
+.a-stat strong { font-size: 1.5rem; line-height: 1.2; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+button.a-stat { cursor: pointer; }
+button.a-stat[aria-pressed="true"] { background: var(--c-accent-soft); border-color: var(--c-accent); box-shadow: inset 0 0 0 1px var(--c-accent); }
+.a-home-table { min-width: 0; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--s-radius); box-shadow: var(--c-shadow); overflow: clip; }
+.a-home-table:not(:has(table)) { display: grid; justify-items: center; gap: 10px; padding: 2.5em 1em; text-align: center; }
+.a-home-empty { margin: 0; color: var(--c-text-2); }
+.a-home-grid { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .9375em; }
+.a-home-grid :is(th, td) { padding: 6px 12px; text-align: left; vertical-align: middle; }
+.a-home-grid thead th {
+  position: sticky; top: 0; z-index: 2; background: var(--c-surface); color: var(--c-text-2);
+  font-size: .8125em; font-weight: 600; white-space: nowrap; border-bottom: 1px solid var(--c-border);
+}
+.a-row > td { border-bottom: 1px solid var(--c-border); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.a-row > td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+.a-row code { font-family: Consolas, monospace; }
+.a-view { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: .45em 1.1em; border: 1px solid var(--c-border-2); border-radius: 999px; background: var(--c-surface); color: var(--c-text); font-weight: 600; line-height: 1.3; text-decoration: none; }
+.a-view:hover { background: var(--c-hover); }
+.a-row-actions :is(button, a) + :is(button, a) { margin-left: 6px; }
+.a-row-actions { white-space: normal; }
+@media (min-width: 760px) { :where(.admin-page) button.a-small { min-height: 32px; padding: .25em .9em; font-size: .8125em; } }
+@media (min-width: 760px) { .a-view { min-height: 32px; padding: .25em .9em; font-size: .8125em; } }
+.a-tag { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: .8125em; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+.a-tag.is-warn { background: var(--c-warn-soft); color: var(--c-warn-ink); }
+.a-tag.is-bad { background: var(--c-bad-soft); color: var(--c-bad-ink); }
+/* 묶음 머리줄: 지역(옅은 면) · 학교(이름 · 지역 · 머리글자 · 계정 수 · [반 더 만들기]) · 학년도(▸ 누르면 펼침) */
+.a-g-region > th { padding: 14px 12px 8px; background: var(--c-surface-2); border-bottom: 1px solid var(--c-border); font-size: 1.0625em; font-weight: 700; }
+.a-g-region small { margin-left: 10px; color: var(--c-text-2); font-size: .8125em; font-weight: 500; }
+.a-g-school > th { padding: 14px 12px 2px; font-weight: 400; }
+.a-g-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.a-g-line strong { font-size: 1.0625em; }
+.a-g-line span { color: var(--c-text-2); font-size: .875em; }
+.a-g-line button { margin-left: auto; }
+.a-g-year > th { padding: 2px 6px; font-weight: 400; border-bottom: 1px solid var(--c-border); }
+.a-year-btn { padding: 2px 10px; border: 0; background: none; color: var(--c-text-2); font-size: .875em; }
+.a-year-btn::before { content: '▸'; display: inline-block; width: 1em; margin-right: 4px; transition: transform .15s ease; }
+.a-year-btn[aria-expanded="true"]::before { transform: rotate(90deg); }
+.a-home-more > summary { cursor: pointer; width: fit-content; min-height: 44px; display: flex; align-items: center; color: var(--c-text-2); font-weight: 600; }
+.a-home-more[open] > summary { margin-bottom: 8px; }
+.a-home-more > summary::-webkit-details-marker { display: none; }
+.a-home-more > summary::before { content: '▸'; display: inline-block; width: 1em; margin-right: 4px; transition: transform .15s ease; }
+.a-home-more[open] > summary::before { transform: rotate(90deg); }
+@media (max-width: 900px) {
+  .a-home-grid, .a-home-grid :is(tbody, tr, th, td) { display: block; }
+  .a-home-grid thead { display: none; }
+  .a-home-grid .a-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr)); gap: 8px 14px; margin: 8px 10px; padding: 12px 14px; border: 1px solid var(--c-border); border-radius: 12px; } /* 폰 두 칸, 태블릿 네 칸 */
+  .a-row > td { display: grid; gap: 1px; justify-items: start; padding: 0; border: 0; white-space: normal; overflow-wrap: anywhere; }
+  .a-row > td::before { content: attr(data-label); color: var(--c-text-2); font-size: .75rem; }
+  .a-row > td.a-row-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+  .a-row > td.a-row-actions::before { display: none; }
+  .a-row-actions :is(button, a) { flex: 1 1 auto; min-height: 44px; }
+  .a-row-actions :is(button, a) + :is(button, a) { margin-left: 0; }
+  .a-g-year > th { border: 0; }
+}
+/* 계정 만들기 시트: 넓으면 거의 화면 가득한 큰 창, 700px 아래는 화면 가득. 시트 안의 만들기 칸 · 쪽지는 판(테두리 · 그림자) 없이 */
+.a-create-sheet .a-panel { padding: 0; border: 0; border-radius: 0; box-shadow: none; background: none; }
+@media (min-width: 700px) { .sheet.a-create-sheet { width: min(1480px, 96vw); height: calc(100dvh - 48px); max-height: none; } }
+@media (max-width: 699px) { .sheet.a-create-sheet { height: 100dvh; max-height: none; border: 0; border-radius: 0; animation: none; } }
+/* ── 선생님 계정 만들기(admin/accounts.js createPanel, 설계서 4-1): 왼쪽 네 칸(학교 · 이름 · 반 수 · 처음 비밀번호), 오른쪽 미리 보기.
+   1200px부터 네 칸을 2×2로(한 화면에 들어오게), 900px 아래는 위아래(미리 보기가 아래로) ── */
+.a-create { gap: 16px; }
+.a-create-head { display: grid; gap: 4px; }
+.a-create-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); gap: 16px 20px; align-items: start; }
+.a-create-steps { display: grid; gap: 14px; min-width: 0; align-items: start; }
+@media (min-width: 1200px) { .a-create-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.a-step { display: grid; gap: 10px; min-width: 0; margin: 0; padding: 12px 16px 16px; border: 1px solid var(--c-border); border-radius: var(--s-radius); }
+.a-step legend { display: flex; align-items: center; gap: 8px; padding: 0 6px; font-weight: 600; }
+.a-step-no { display: inline-grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--c-accent); color: var(--c-on-accent); font-size: .8125em; }
+.a-create :is(input, select) { min-width: 0; min-height: 42px; }
+.a-create select { width: 100%; font: inherit; padding: 0 .6em; border: 1px solid var(--c-border-2); border-radius: 10px; background: var(--c-surface); color: var(--c-text); }
+.a-create textarea { min-height: 100px; max-height: 220px; }
+.a-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.a-school { display: grid; gap: 8px; }
+.a-school-hits { display: grid; gap: 6px; max-height: 320px; overflow: auto; }
+.a-school-hits:empty { display: none; }
+.a-school-hits > [role="listitem"] { display: grid; }
+.a-school-hit { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; text-align: left; border-radius: 12px; }
+.a-school-hit span { flex: none; color: var(--c-text-2); font-size: .875em; font-weight: 500; }
+.a-school-chip { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px 12px; border-radius: 12px; background: var(--c-surface-2); border: 1px solid var(--c-border); }
+.a-school-chip span { color: var(--c-text-2); }
+.a-school-chip button { margin-left: auto; }
+.a-school-manual { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } /* 학교 이름은 한 줄 가득, 그 아래 시·도 · 시·군·구 */
+.a-school-manual > :first-child { grid-column: 1 / -1; }
+:where(.admin-page) button.a-link { justify-self: start; min-height: 0; padding: 4px 0; border: 0; background: none; color: var(--c-accent-ink); text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
+.a-taken { margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--c-warn-soft); color: var(--c-warn-ink); font-size: .875em; }
+.a-mode { display: flex; flex-wrap: wrap; gap: 8px; }
+.a-mode [aria-pressed="true"] { background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); }
+.a-year { max-width: 12em; }
+.a-rule-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } /* 1~3학년 · 4~6학년 두 줄 */
+.a-create-preview { position: sticky; top: 12px; display: grid; gap: 10px; min-width: 0; max-height: calc(100dvh - 140px); overflow: auto; padding: 16px; border-radius: var(--s-radius); background: var(--c-surface-2); border: 1px solid var(--c-border); }
+.a-create-preview h3 { margin: 0; font-size: 1em; }
+.a-rule-line { display: flex; flex-wrap: wrap; gap: 2px 14px; margin: 2px 0 0; font-size: .875em; color: var(--c-text-2); }
+.a-rule-line > :last-child { color: var(--c-text); }
+.a-preview-head { margin: 0; font-weight: 600; }
+.a-preview-head[data-tone="bad"] { color: var(--c-bad-ink); font-weight: 500; }
+.a-preview-body { display: grid; gap: 10px; }
+.a-preview-grade h4 { margin: 0 0 4px; font-size: .875em; font-weight: 600; color: var(--c-text-2); }
+.a-preview-grade ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 14px; }
+.a-preview-grade li { display: flex; align-items: baseline; gap: 8px; min-width: 0; font-size: .9375em; }
+.a-preview-grade li span { min-width: 0; overflow-wrap: anywhere; }
+.a-preview-grade li.is-there { color: var(--c-text-2); }
+.a-preview-grade li.is-there :is(code, span) { text-decoration: line-through; }
+.a-preview-grade em { flex: none; font-style: normal; font-size: .75em; padding: 1px 7px; border-radius: 999px; background: var(--c-bar-track); color: var(--c-text-2); }
+.a-create code { font-family: Consolas, monospace; }
+.a-make { min-height: 48px; }
+@media (max-width: 900px) { .a-create-grid { grid-template-columns: 1fr; } .a-create-preview { position: static; max-height: none; } }
+.a-slip-actions { display: flex; gap: 12px; }
+.a-slips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.a-slip { padding: 16px; border: 1px dashed var(--c-border-2); border-radius: 10px; background: var(--c-surface); break-inside: avoid; }
+.a-slip h3 { font-size: 1.05rem; }
+.a-password { font-family: Consolas, monospace; letter-spacing: .08em; }
+.a-slip p { margin-top: 5px; }
+@media (max-width: 759px) { .a-two, .a-school-manual { grid-template-columns: 1fr; } .a-slips { grid-template-columns: 1fr; } }
+@page { size: A4; margin: 12mm; }
+@media print {
+  body.admin-page { background: white; color: black; }
+  .admin-page .s-top, .admin-page .s-rail, .a-slips-panel > :not(.a-slips) { display: none !important; }
+  /* 쪽지는 계정 만들기 시트 안에 뜬다: 시트만 남기고 쪽 나머지는 숨긴다. 시트는 판 · 그림자 · 높이 없이 종이에 그대로 */
+  body:has(.sheet .a-slips) > :not(.sheet-backdrop) { display: none !important; }
+  .sheet-backdrop:has(.a-slips) { position: static; display: block; padding: 0; background: none; }
+  .sheet:has(.a-slips) { display: block; width: auto; height: auto; max-height: none; overflow: visible; padding: 0; border: 0; border-radius: 0; box-shadow: none; animation: none; }
+  .sheet:has(.a-slips) > .sheet-close { display: none; }
+  .admin-page .s-app { display: block; height: auto; min-height: 0; }
+  #admin { display: block; padding: 0; }
+  .a-slips-panel { display: block; border: 0; padding: 0; box-shadow: none; }
+  .a-slips { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .a-slip { color: black; background: white; border: 1px dashed #777; border-radius: 0; padding: 5mm; font-size: 10pt; }
+}
