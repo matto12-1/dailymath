@@ -1,0 +1,48 @@
+/* MattoLAB 글자와 종이 창(app/lab.js, 설계서 4-5). 네 쪽(아이 첫 화면 · 선생님 · 관리 · 개인정보)이 브랜드 파일 바로 다음에 건다.
+   창 알맹이(.lab)의 구조 · 크기 · 브랜드 색은 assets/brand/brand.css(mattolab-brand 사본, 고치지 않는다). 여기서는 글자와 종이만 정하고,
+   종이 · 알맹이의 이 쪽 색(--lab-paper · --lab-rule · --lab-text · --lab-ink …)은 뒤에 읽는 각 쪽 CSS가 덮는다. */
+
+/* 글꼴: matto.kr 머리 워드마크(Big Shoulders Display 800)에서 「MattoLAB」 글자만 담은 사본(1.4KB, OFL: fonts/BigShoulders-OFL.txt).
+   이름에 내용 해시를 붙인다(묶기가 CSS 안 주소에는 판번호를 붙이지 않는다) */
+@font-face { font-family: 'MattoLAB Wordmark'; src: url('fonts/big-shoulders-800-mattolab.3def435643d1.woff2') format('woff2'); font-weight: 800; font-display: block; }
+
+/* 위쪽 오른쪽 글자(단추). Matto는 밝은 바탕에서 먹색 · 어두운 판에서 크림, LAB은 늘 코랄(matto.kr · 마또랜드 워드마크). 누르는 칸 44px 이상 */
+.labmk {
+  --labmk-ink: #1e1e1e;
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin: 0; padding: 0 10px;
+  border: 0; border-radius: 999px; background: none; box-shadow: none; cursor: pointer; flex: none;
+  font: 800 1.5rem/1 'MattoLAB Wordmark', 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -.005em; white-space: nowrap;
+  color: var(--labmk-ink);
+}
+.labmk i { font-style: normal; color: #e8590c; }
+.labmk:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+html[data-theme="dark"] .labmk { --labmk-ink: #f2ecdf; }
+
+/* 종이 창: 가운데 종이 한 장(이야기 한국사 #labsheet .paper 결, 두 줄 테두리). sheet.js의 바탕(.sheet-backdrop)을 이 창일 때만 덮는다:
+   폰에서도 아래에서 올라오지 않고 가운데 종이다. 개인정보 쪽에는 시트 CSS가 없어서 바탕도 여기서 모두 정한다 */
+.sheet-backdrop:has(> .lab-sheet) {
+  position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(51, 41, 31, .32);
+}
+.sheet.lab-sheet {
+  --lab-paper: #fffdf7; --lab-rule: #4a3b30; --lab-text: #2e2b25;
+  position: relative; display: block; flex: none; width: min(720px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain;
+  margin: 0; padding: 26px 30px 22px; border: 1.5px solid var(--lab-rule); border-radius: 0;
+  outline: 1px solid color-mix(in srgb, var(--lab-rule) 40%, transparent); outline-offset: -6px;
+  background: var(--lab-paper); color: var(--lab-text); box-shadow: 0 18px 48px rgba(40, 30, 20, .24); text-align: left;
+  animation: lab-pop .14s ease-out;
+}
+@keyframes lab-pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.lab-sheet > .sheet-close {
+  position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 44px; height: 44px; min-height: 44px; margin: 0; padding: 0;
+  border: 0; border-radius: 50%; background: transparent; box-shadow: none; color: var(--lab-text); font: 400 18px/1 system-ui, sans-serif;
+}
+.lab-sheet > .sheet-close:hover { background: color-mix(in srgb, var(--lab-rule) 10%, transparent); }
+.lab-sheet > .sheet-close:focus-visible { outline: 3px solid var(--lab-text); outline-offset: -3px; }
+/* 알맹이: 종이가 이미 여백을 가진다. 공용 가운데 묶음 · 바깥 여백을 끄고(이야기 한국사와 같은 까닭) ✕ 자리만큼 오른쪽을 비운다 */
+.lab-sheet .lab { --lab-wrap: none; margin: 0; padding: 0 30px 0 0; }
+@media (max-width: 760px) {
+  .sheet.lab-sheet { padding: 22px 18px 18px; }
+  .lab-sheet .lab { padding-right: 0; }
+  .lab-sheet .lab .brandline { padding-right: 40px; }
+}
+@media (prefers-reduced-motion: reduce) { .sheet.lab-sheet { animation: none; } }
